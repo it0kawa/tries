@@ -19,14 +19,14 @@ private:
     class Node {
     private:
         Value val;
-        Node* next[R];
+        Node* childs[R];
     public:
         Node();
         Node(const Value &value);
         Value getValue() const;
-        Node* getNext(unsigned char c) const;
+        Node* getChild(unsigned char c) const;
         void putValue(const Value &val);
-        void putNext(unsigned char c, Node* node);
+        void putChild(unsigned char c, Node* node);
     };
 
     Node* root;
@@ -44,24 +44,24 @@ public:
 // implementacio
 
 template <typename Value>
-Trie<Value>::Node::Node() : val(), next() {}
+Trie<Value>::Node::Node() : val(), childs() {}
 
 template <typename Value>
-Trie<Value>::Node::Node(const Value &value): val(value), next() {}
+Trie<Value>::Node::Node(const Value &value): val(value), childs() {}
 
 template <typename Value>
 Value Trie<Value>::Node::getValue() const { return val; }
 
 template <typename Value>
-typename Trie<Value>::Node* Trie<Value>::Node::getNext(unsigned char c) const { 
-    return next[c]; 
+typename Trie<Value>::Node* Trie<Value>::Node::getChild(unsigned char c) const { 
+    return childs[c]; 
 }
 
 template <typename Value>
 void Trie<Value>::Node::putValue(const Value &val) { this->val = val; }
 
 template <typename Value>
-void Trie<Value>::Node::putNext(unsigned char c, Node* node) { next[c] = node; }
+void Trie<Value>::Node::putChild(unsigned char c, Node* node) { childs[c] = node; }
 
 template <typename Value>
 typename Trie<Value>::Node* Trie<Value>::put(
@@ -69,8 +69,8 @@ typename Trie<Value>::Node* Trie<Value>::put(
 
     if (d == key.length()) { node->putValue(val); return node; }
     unsigned char c = key[d];
-    if (node->getNext(c) == nullptr) node->putNext(c, new Node());
-    return put(node->getNext(c), key, val, d + 1);
+    if (node->getChild(c) == nullptr) node->putChild(c, new Node());
+    return put(node->getChild(c), key, val, d + 1);
 }    
 
 template <typename Value>
@@ -80,7 +80,7 @@ typename Trie<Value>::Node* Trie<Value>::get(
     if (node == nullptr) return nullptr;
     if (d == key.length()) return node;
     unsigned char c = key[d];
-    return get(node->getNext(c), key, d + 1);
+    return get(node->getChild(c), key, d + 1);
 }
 
 template <typename Value>
