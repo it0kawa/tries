@@ -1,7 +1,10 @@
-all: test
+all: testNaive testTst
 
-test:
-	g++ -Wall -Werror -o test.x test.cpp
+testNaive:
+	g++ -Wall -Werror -o testNaive.x testNaive.cpp
+
+testTst:
+	g++ -Wall -Werror -o testTst.x testTst.cpp
 
 clean:
-	rm -f test.x
+	rm -f testNaive.x
