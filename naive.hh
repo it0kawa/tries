@@ -25,8 +25,8 @@ private:
         Node(const Value &value);
         Value getValue() const;
         Node* getChild(unsigned char c) const;
-        void putValue(const Value &val);
-        void putChild(unsigned char c, Node* node);
+        void setValue(const Value &val);
+        void setChild(unsigned char c, Node* node);
     };
 
     Node* root;
@@ -58,18 +58,18 @@ typename Trie<Value>::Node* Trie<Value>::Node::getChild(unsigned char c) const {
 }
 
 template <typename Value>
-void Trie<Value>::Node::putValue(const Value &val) { this->val = val; }
+void Trie<Value>::Node::setValue(const Value &val) { this->val = val; }
 
 template <typename Value>
-void Trie<Value>::Node::putChild(unsigned char c, Node* node) { childs[c] = node; }
+void Trie<Value>::Node::setChild(unsigned char c, Node* node) { childs[c] = node; }
 
 template <typename Value>
 typename Trie<Value>::Node* Trie<Value>::put(
     Node* node, const string &key, const Value &val,size_t d) {
 
-    if (d == key.length()) { node->putValue(val); return node; }
+    if (d == key.length()) { node->setValue(val); return node; }
     unsigned char c = key[d];
-    if (node->getChild(c) == nullptr) node->putChild(c, new Node());
+    if (node->getChild(c) == nullptr) node->setChild(c, new Node());
     return put(node->getChild(c), key, val, d + 1);
 }    
 
