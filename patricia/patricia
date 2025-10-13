@@ -1,0 +1,22 @@
+- divergences are binary, thats why we only need to store the first 
+  differing bit of the branch
+
+- patricia is radix with r=2
+
+- only terminal nodes hold val, a copy of the entire path to that node
+  (key), the others store a nullptr. That is necessary bc we can see how
+  path compression alone could allow for false positives like:
+
+	100000 -> goes to branch 0
+	100100 -> goes to branch 1
+
+	without value 100001 would incorrectly evalueate true for 100000
+	
+- due to [path compression we can see that early returns are not possible
+
+- due to path compression we can see suffic search becomes hard or
+  impossible as it would require us to store values on every node, defeating
+  patricia's main objective
+
+- prefix search is really hard as it would require visiting all (or enough
+  until we find a match) leaf nodes branching from that node
