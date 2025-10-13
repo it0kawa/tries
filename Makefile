@@ -1,10 +1,16 @@
-all: testNaive testTst
+FLAGS = -Wall -Werror -O2
+
+all: testNaive testTst testPatricia
 
 testNaive:
-	g++ -Wall -Werror -o testNaive.x testNaive.cpp
+	g++ $(FLAGS) -o testNaive.x testNaive.cpp
 
 testTst:
-	g++ -Wall -Werror -o testTst.x testTst.cpp
+	g++ $(FLAGS) -o testTst.x testTst.cpp
+
+testPatricia:
+	g++ $(FLAGS) -o testPatricia.x ./patricia/patriciaTrie.cpp \
+		./patricia/testPatricia.cpp
 
 clean:
-	rm -f testNaive.x
+	rm -f *.x 
