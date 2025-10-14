@@ -98,11 +98,20 @@ typename Tst<Value>::Node* Tst<Value>::put(
     Node* node, const string &key, const Value &val, size_t d) {
 
     string c(1,key[d]);
-    if (node == nullptr) { node = new Node(); node->putCharacter(c); }
-    if (c.compare(node->getCharacter()) < 0) node->putLeft(put(node->getLeft(), key, val, d));
-    else if (c.compare(node->getCharacter()) > 0) node->putRight(put(node->getRight(), key, val, d));
-    else if (d < key.length() - 1) node->putMid(put(node->getMid(), key, val, d + 1));
-    else node->putValue(val);
+    if (node == nullptr) { cout << "put: crea por nodo null: " << c << endl; node = new Node(); node->putCharacter(c); }
+    if (c.compare(node->getCharacter()) < 0) {
+        cout << "put: entra left: " << c << endl;
+        node->putLeft(put(node->getLeft(), key, val, d));
+    } else if (c.compare(node->getCharacter()) > 0) {
+        cout << "put: entra right: " << c << endl;
+        node->putRight(put(node->getRight(), key, val, d));
+    } else if (d < key.length() - 1) {
+        cout << "put: entra mid: " << c << endl;
+        node->putMid(put(node->getMid(), key, val, d + 1));
+    } else {
+        cout << "put: entra exacto: " << c << " poniendo value: " << val << endl;
+        node->putValue(val);
+    }
     return node;
 }
 
@@ -116,12 +125,24 @@ vector<Value> Tst<Value>::get(const string &key) const {
 template <typename Value>
 typename Tst<Value>::Node* Tst<Value>::get(
     Node* node, const string &key, size_t d) const{
-    if (node == nullptr) return nullptr;
+    if (node == nullptr) {
+        cout << "get: nodo null" << endl;
+        return nullptr;
+    }
     string c(1,key[d]);
-    if (c.compare(node->getCharacter()) < 0) return get(node->getLeft(), key, d);
-    else if (c.compare(node->getCharacter()) > 0) return get(node->getRight(), key, d);
-    else if (d < key.length() - 1) return get(node -> getMid(), key, d + 1);
-    else return node;
+    if (c.compare(node->getCharacter()) < 0) {
+        cout << "get: entra left: " << c << endl;
+        return get(node->getLeft(), key, d);
+    } else if (c.compare(node->getCharacter()) > 0) {
+        cout << "get: entra right: " << c << endl;
+        return get(node->getRight(), key, d);
+    } else if (d < key.length() - 1) {
+        cout << "get: entra mid: " << c << endl;
+        return get(node -> getMid(), key, d + 1);
+    } else {
+        cout << "get: nodo encontrado: " << c << endl;
+        return node;
+    }
 }
 
 
