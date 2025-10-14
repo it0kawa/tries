@@ -1,4 +1,4 @@
-FLAGS = -Wall -Werror -O2
+FLAGS = -Wall -Werror -O2 -std=c++17
 
 all: testNaive testTst testPatricia
 
