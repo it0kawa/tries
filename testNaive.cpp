@@ -5,21 +5,28 @@
 using namespace std;
 
 void test1() {
-    pair<string, int> tests[3] = {
+    pair<string, int> tests[4] = {
         {"hola", 1},
         {"adeu", 2},
         {"si", 3},
+        {"hola", 4},
     };
 
-    Trie<int> trie;
+    pair<string, vector<int>> resultsTest[3] = {
+        {"hola", {1, 4}},
+        {"adeu", {2}},
+        {"si", {3}},
+    };
+
+    Naive<int> trie;
 
     for (auto &t : tests) {
         trie.put(t.first, t.second);
     } 
-    for (auto &t : tests) {
+    for (auto &t : resultsTest) {
         assert(trie.get(t.first) == t.second);
     }
-    assert(trie.get("noExisteix") == 0);
+    assert(trie.get("noExisteix") == vector<int>());
     cout << "> test 1 (get/put) correcte" << endl;
 }
 
@@ -29,7 +36,7 @@ void test2() {
         {"adeu", 2},
         {"si", 3},
     };
-    Trie<int> trie;
+    Naive<int> trie;
     for (auto &t : tests) {
         trie.put(t.first, t.second);
     } 
