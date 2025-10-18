@@ -12,13 +12,13 @@ void test1() {
         {"hola", 4},
     };
 
-    pair<string, vector<int>> resultsTest[3] = {
+    pair<string, vector<size_t>> resultsTest[3] = {
         {"hola", {1, 4}},
         {"adeu", {2}},
         {"si", {3}},
     };
 
-    Naive<int> trie;
+    Naive trie;
 
     for (auto &t : tests) {
         trie.put(t.first, t.second);
@@ -26,7 +26,8 @@ void test1() {
     for (auto &t : resultsTest) {
         assert(trie.get(t.first) == t.second);
     }
-    assert(trie.get("noExisteix") == vector<int>());
+    assert(trie.get("noExisteix") == vector<size_t>());
+    trie.printStats();
     cout << "> test 1 (get/put) correcte" << endl;
 }
 
@@ -36,7 +37,7 @@ void test2() {
         {"adeu", 2},
         {"si", 3},
     };
-    Naive<int> trie;
+    Naive trie;
     for (auto &t : tests) {
         trie.put(t.first, t.second);
     } 
@@ -44,6 +45,7 @@ void test2() {
         assert(trie.contains(t.first));
     }
     assert(!trie.contains("noExisteix"));
+    trie.printStats();
     cout << "> test 2 (contains) correcte" << endl;
 }
 
