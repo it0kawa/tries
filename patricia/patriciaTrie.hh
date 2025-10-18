@@ -14,11 +14,6 @@ using namespace std;
 > Implementacio d'un patricia trie sense:
     + destructor
     + remove
-
-> Falta:
-    + netejar, comentar i potser optimitzar alguna cosa
-    + l'anterior i testejar isPrefix i autocompleta
-    + testejar stats
 */
 
 class PTrie {
