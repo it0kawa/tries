@@ -311,7 +311,8 @@ void PTrie::calculateStats(const Node *node, Stats &stats, size_t height) const 
         stats.maxHeight = max(stats.maxHeight, height);
         stats.totalHeight += height;
         ++stats.numWords;
-        stats.totalWordlen += node->getKey().length();
+        // no es comtpa el centinela
+        stats.totalWordlen += node->getKey().length() - 1;
         return;
     }
     else {
@@ -344,8 +345,8 @@ void PTrie::printStats() const {
     cout << "> numWords(terminals): " << stats.numWords << "\n";
     cout << "> maxHeight: " << stats.maxHeight << "\n";
     cout << "> avgHeight: " << avgHeight << "\n";
-    cout << "> avg word length: " << avgWordLen << "\n";
-    cout << "> avg height/wordLen: " << avgHeightRatioWordLen << "\n";
+    cout << "> avg word length (bytes): " << avgWordLen << "\n";
+    cout << "> avg height/wordLen (bytes): " << avgHeightRatioWordLen << "\n";
     cout << "> avg Nodes/word: " << avgNodeRatioWords << endl;
     cout << "\n---------------------------------" << endl;
     cout << "MemoryUsage (bytes): " << memory << endl;
