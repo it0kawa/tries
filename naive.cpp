@@ -104,7 +104,7 @@ void Naive::printStats() const {
 
     size_t memory = stats.staticMemory + stats.posMemory;
     cout << "\n=================================" << endl;
-    cout << "       Patricia trie stats" << endl;
+    cout << "       Naive trie stats" << endl;
     cout << "---------------------------------" << endl;
     cout << "> numNodes: " << stats.numNodes << "\n";
     cout << "> numWords(terminals): " << stats.numWords << "\n";
