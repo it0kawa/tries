@@ -32,7 +32,7 @@ int main()
 
     Naive trie;
     string raw_word;
-    int word_position = 1;
+    size_t word_position = 1;
 
     while (file >> raw_word) {
         string word = clean_word(raw_word);
