@@ -36,7 +36,7 @@ private:
         // retorna cert si el node es terminal, fals en cas contrari
         bool isTerminal() const;
 
-        // getters
+        // getters 
         size_t getBitPos() const;
         vector<size_t> getTextPos();
         const string& getKey() const;

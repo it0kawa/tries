@@ -192,7 +192,7 @@ void test4() {
 
     assert(t.getPositions("aquest no l'hem afegit!") == vector<size_t>());
     assert(t.getPositions("aaaaa <- hi seria sense aquesta explicacio") == vector<size_t>());
-    t.printStats();
+    t.printStats(); 
     cout << "> test 4 (getPoscions) correcte\n" << endl;
 }
 

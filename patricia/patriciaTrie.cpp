@@ -323,7 +323,7 @@ void PTrie::calculateStats(const Node *node, Stats &stats, size_t height) const 
 void PTrie::printStats() const {
     Stats stats;
 
-    // root es un dummy
+    // root es un dummy 
     if (!isEmpty()) calculateStats(root->getChild(0), stats, 0);
     
     float avgHeight = 0, avgWordLen = 0;
