@@ -5,6 +5,8 @@
 #include <iostream>
 #include <set>
 #include <string>
+#include <vector>
+#include <tuple>
 
 using namespace std;
 
@@ -13,58 +15,86 @@ using namespace std;
     + destructor
     + remove
 
-> Problemes amb la implementacio: 
-    + string "" generara errors -> No s'accepta string buit:
-        - Arreglat, mirar Trie::Trie() per explicacio 
-    
-    + insert falla:
-        - Arreglat, no verificavem restriccio que s'ha de cumplir sempre:
-            `No hi ha cap paraula que pugui ser prefix d'una altra`
-
 > Falta:
     + netejar, comentar i potser optimitzar alguna cosa
-    + l'anterior i testejar isPrefix i getPrefixed
+    + l'anterior i testejar isPrefix i autocompleta
+    + testejar stats
 */
 
 class PTrie {
 private:
-    static const int TERMINALNODE = INT_MAX;
+    // bit position per identificar nodes terminals facilment
+    static const size_t TERMINALNODE = INT_MAX;
     class Node {
     private:
-        int bit;
-        // empty strong if non-terminal
+        // node que representa l'i-essim bit de differencia en el trie
+        size_t bit;
+        // empty string si es intermaedi
         string key;
         // 0-branch i 1-branch
         Node* child[2];
+        // posicions que ocupa la paraula dins del text
+        vector<size_t> textPos;
+
     public:
-        Node(int bit, const string &key);
+        Node(size_t bit, const string &key = "", int pos = 0);
+        // retorna cert si el node es terminal, fals en cas contrari
         bool isTerminal() const;
-        // bit de diferencia sobre key que representa el node
-        int getBitPos() const;
 
+        // getters
+        size_t getBitPos() const;
+        vector<size_t> getTextPos();
         const string& getKey() const;
-        void setKey(const string &key);
-
         Node* getChild(bool branch) const;
+        // retorna una tuple de memoria estatica, i dinamica per string i vector
+        tuple<size_t, size_t, size_t> getMemoryUsage() const;
+        
+        // setters
+        void addTextPos(int pos);
+        void setKey(const string &key);
         void setChild(bool branch, Node* node);
     };
-    
+
+    struct Stats {
+        size_t maxHeight = 0;
+        size_t totalHeight = 0;
+        size_t numNodes = 0;
+        size_t numWords = 0;
+        size_t totalWordlen = 0;
+        size_t staticMemory = 0;
+        size_t wordsMemory = 0;
+        size_t posMemory = 0;
+    };  
+
     Node* root;
+
+    // afegeix un centinela per satisfer la precondicio descrita a la implementacio
+    static void preventPrefix(string &key);
+    // comproba que la paraula `key` satisfaci el nostre llenguatge acceptat
+    static bool verify(const string &key);
+    // valor (0 o 1) del i-essim bit de key
+    static bool getBit(const string &key, size_t i);
+    
+    // helpers
     static void getPrefixed(const Node* node, set<string> &prefixed);
+    Node* findNode(const string &key) const;
+    void calculateStats(const Node* node, Stats &stats, size_t height) const;
 
 public:
     PTrie();
-    // valor (0 o 1) del i-essim bit de key
-    static string preventPrefix(string &key);
-    static void verify(const string &key);
-    static bool getBit(const string &key, int i);
-    void insert(string key);
+    // inserta i actualitza el vector de posicions dins del text per la paraula `key`
+    void insert(string key, size_t pos);
     // retorna cert si key forma part del trie
     bool contains(string key) const;
-        // retorna cert si existeix almenys una paraula amb prefix `prefix` al trie
+    // retorna les posicions on apareix `key`
+    vector<size_t> getPositions(string key) const;
+    // retorna cert si existeix almenys una paraula amb prefix `prefix` al trie
     bool isPrefix(string prefix) const;
     // retorna el set de paraules prefixades per `prefix` del trie
-    set<string> getPrefixed(string prefix) const;
+    set<string> autocompleta(string prefix) const;
+    // printa les estadistiques referents al trie
+    void printStats() const;
+    // retorna True si el trie es buit (nomes conte el node root)
     bool isEmpty() const;
 };
 

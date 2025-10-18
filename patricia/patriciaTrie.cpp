@@ -2,16 +2,17 @@
 #include <stdexcept>
 
 ///////////////////// Node 
-PTrie::Node::Node(int bit, const string &key = "") 
+PTrie::Node::Node(size_t bit, const string &key, int pos) 
     : bit(bit),     
     key(key)  
 {   
     child[0] = this; child[1] = this;
+    if (pos >= 0) textPos = vector<size_t>{(size_t)pos};
 }
 
 bool PTrie::Node::isTerminal() const { return bit == TERMINALNODE; }
 
-int PTrie::Node::getBitPos() const { return bit; }
+size_t PTrie::Node::getBitPos() const { return bit; }
 
 const string& PTrie::Node::getKey() const { return key; }
 
@@ -24,22 +25,34 @@ void PTrie::Node::setChild(bool branch, PTrie::Node* node) {
     child[branch] = node;
 }
 
+vector<size_t> PTrie::Node::getTextPos() {
+    return textPos;
+}
+
+void PTrie::Node::addTextPos(int pos) {
+    if (pos >= 0) textPos.push_back((size_t)pos);
+}
+
+tuple<size_t, size_t, size_t> PTrie::Node::getMemoryUsage() const {
+    // no inclou la memoria dinamica
+    size_t staticMem = sizeof(*this);
+
+    // potser hauria de fer servir capacity en comptes de length/size?
+    // afegim la memoria dinamica del string
+    size_t wordsMem = sizeof(char) * key.length();
+    // afegim la memoria dinamica del vector
+    size_t posMem = sizeof(size_t) * textPos.size();
+    return {staticMem, wordsMem, posMem};
+}
+
 ///////////////////// Trie
-/*
-Veiem que buscar un string buit seria problematic ja que tots els nodes no
-terminals el contenen, la solucio que he pensat ha estat tractar l'string buit
-com un cas especial que es guardara a root, per tant, ha de ser inicialitzat
-amb un valor diferent a string buit inicialment per a poder comprovar si ha 
-estat afegit o no
-*/
-PTrie::PTrie() : root(new Node(-1, "~")) {}
+PTrie::PTrie() : root(new Node(0, "~")) {}
 
 // si el trie te algun element, sempre sera root[0] accessible, si root[0] 
 // apunta a ell mateix el trie es buit.
 bool PTrie::isEmpty() const {
    return root->getChild(0) == root;
 }
-
 
 /*
 Hi ha unja restriccio que s'ha de cumplir sempre:
@@ -49,72 +62,105 @@ Una manera d'assegurar aquesta premisa necessaria es afegir un centinela al
 final de cada paraula. Un punt en contra d'aixo es que no podem guardar cap
 paraula la versio original de la qual contingui aquest centinela.
 */
-string PTrie::preventPrefix(string &key) {
+void PTrie::preventPrefix(string &key) {
     key.push_back('\0');
-    return key;
 }
 
-// esta per decidir si "" es acceptat o no
-void PTrie::verify(const string &key) {
-    // if (key == "") {
-    //     throw invalid_argument("no s'accepta string buit (\"\") al trie");
-    // }
-    if (key.find('\0') != string::npos) {
-        throw invalid_argument("no s'accepten strings que continguin el caracter \\0");
+bool PTrie::verify(const string &key) {
+    try {
+        if (key == "") {
+            throw invalid_argument("no s'accepta string buit (\"\")");
+        }
+        if (key.find('\0') != string::npos) {
+            throw invalid_argument("no s'accepten strings que continguin el caracter nul ('\\0')");
+        }
     }
+    catch (const exception &e) {
+        cerr << "[Error]: no s'ha acceptat l'input -> " << e.what() << endl;
+        return false;
+    }
+    return true;
 }
 
 /*
 Big endian. la part dels ASCII que acostumem a trobar en textos comparteixen
 un prefix igual molt mes llarg que el sufix, per tant, el path compression
 es lleugerament mes eficient en memoria amb big endian que amb little endian
-ja que requereix menys nodes no terminals.
+ja que requereix menys nodes interemedis.
 */ 
-bool PTrie::getBit(const string &key, int i) {
+bool PTrie::getBit(const string &key, size_t i) {
     // agafem el byte
     size_t index = i / 8;
-    if (index >= key.length() || i < 0) return false;
+    if (index >= key.length()) return false;
     // agafem el bit
     size_t bit = 7 - (i & 7);
     return ((unsigned char)key[index] >> bit) & 1;
 }
 
-void PTrie::insert(string key) {
-    verify(key);
-    // verifica els casos especials "" i trie buit
-    if (key == "") {
-        if (root->getKey() != "") root->setKey("");
-        return;
-    }
-
-    key = preventPrefix(key);
-    if (isEmpty()) {
-        root->setChild(0, new Node(TERMINALNODE, key));
-        return;
-    }
-    
-    // root[1] mai tindra elements
+/* 
+busca un node donada una paraula `key`
+precondicio: 
+    - `key` es correcte
+    - s'ha afegit centinela a `key`
+    - Trie not empty
+postcondicio:
+    no necessariament torna un node que guarda `key`.
+    + Si existeix un node que guarda `key`, el retorna
+    + Si no existeix retorna un node `candidat` que ha trobat pero que no es el
+      que originalment buscavem, aquest node pot guardar una paraula totalment
+      different a `key`.
+*/
+PTrie::Node *PTrie::findNode(const string &key) const
+{
     Node* parent = root;
-    Node* child = root->getChild(0);
+    // root[1] mai tindra elements
+    Node* child = parent->getChild(0);
 
-    int keylen = key.length() * 8;
+    size_t keyBitLen = key.length() * 8;
     
-    // identic a contains, consultar contains per explicacio del early exit
+    /*
+    Veiem perque podem fer un early exit:
+    - Trie garanteix que per tot node, bit parent < bit child.
+    Veiem que si entrem a la condicio < keylen, aixo vol dir que parent no es
+    terminal, ja que si ho fos el seu fill apuntaria a ell mateix trencant la
+    invariant. Per tant, si pare no es terminal i te una diferencia a un bit
+    major que keylen, aleshores `key` no esta al trie
+
+    Per que parent.bit < keylen i no child.bi < keylen? si child terminal i 
+    parent no terminal, child.bit = TERMINALNODE > keylen pero encara pot 
+    contenir `key`
+    */
     while (parent->getBitPos() < child->getBitPos() &&
-        parent->getBitPos() < keylen)
+        parent->getBitPos() < keyBitLen)
     {
         parent = child;
         child = child->getChild(getBit(key, child->getBitPos()));
     }
 
-    // si la paraula ja pertany al trie retornem sense inserir
-    const string &childKey = child->getKey();
-    if (childKey == key) return;
-    
-    int diffBit = 0;
-    int overlappedPath = max(key.length(), childKey.length()) * 8;
+    return child;
+}
 
-    parent = root;
+void PTrie::insert(string key, size_t pos) {
+    if (!verify(key)) return;
+    preventPrefix(key);
+    
+    if (isEmpty()) {
+        root->setChild(0, new Node(TERMINALNODE, key, pos));
+        return;
+    }
+    
+    Node* child = findNode(key);
+
+    // si la paraula ja pertany al trie retornem sense inserir pero afegim pos
+    const string &childKey = child->getKey();
+    if (childKey == key) {
+        child->addTextPos(pos);
+        return;
+    }
+    size_t diffBit = 0;
+    size_t overlappedPath = max(key.length(), childKey.length()) * 8;
+
+    Node* parent = root;
     child = root->getChild(0);
 
     while (getBit(key, diffBit) == getBit(childKey, diffBit) && 
@@ -131,8 +177,7 @@ void PTrie::insert(string key) {
     
     Node* newNode = new Node(diffBit);
     bool branch = getBit(key, diffBit);
-
-    newNode->setChild(branch, new Node(TERMINALNODE, key));
+    newNode->setChild(branch, new Node(TERMINALNODE, key, pos));
     newNode->setChild(!branch, child);
     // penjem aquest nou node diferencia al pare del node diferencia que hem
     // substituit
@@ -140,52 +185,36 @@ void PTrie::insert(string key) {
 }
 
 bool PTrie::contains(string key) const {
-    verify(key);
-    if (key == "") return root->getKey() == "";
+    if (!verify(key) || isEmpty()) return false;
+    preventPrefix(key);
 
-    key = preventPrefix(key);
-    if (isEmpty()) return false;
-
-    Node* parent = root;
-    Node* child = parent->getChild(0);
-
-    int keyBitLen = key.length() * 8;
-    
-    /*
-    Veiem perque podem fer un early exit:
-    - Trie garanteix que per tot node, bit parent < bit child.
-    Veiem que si entrem a la condicio < keylen, aixo vol dir que parent no es
-    terminal, ja que si ho fos el seu fill apuntaria a ell mateix trencant la
-    invariant. Per tant, si pare no es terminal i te una diferencia a un bit
-    major que keylen, aleshores key no esta al trie
-
-    Per que parent.bit < keylen i no child.bi < keylen? si child terminal i 
-    parent no terminal, child.bit = TERMINALNODE > keylen pero encara pot 
-    contenir key 
-    */
-    while (parent->getBitPos() < child->getBitPos() &&
-        parent->getBitPos() < keyBitLen)
-    {
-        parent = child;
-        child = child->getChild(getBit(key, child->getBitPos()));
-    }
-
-    //cout << "key: " << key << ", childKey: " << child->getKey() << endl;
-    return child->getKey() == key;
+    Node* node = findNode(key);
+    return node->getKey() == key;
 }
 
+// veiem que es identica a findNode pero retorna el vector de posicions
+// en comptes d'un boolea
+vector<size_t> PTrie::getPositions(string key) const
+{
+    vector<size_t> noMatch = vector<size_t>();
+    if (!verify(key) || isEmpty()) return noMatch;
+    preventPrefix(key);
+    
+    Node* node = findNode(key);
+
+    if (node->getKey() == key) return node->getTextPos();    
+    return noMatch;
+}
 
 /*
-Al contrari que amb contains aqui no podem fer early return ja que hem 
+Al contrari que amb findNode aqui no podem fer early return ja que hem 
 d'arribar a un node terminal per comprobar si el seu prefix es el que busquem
 */
 bool PTrie::isPrefix(string prefix) const {
-    verify(prefix);
-    if (prefix == "") return root->getKey() == "";
+    if (!verify(prefix) || isEmpty()) return false;
 
-    prefix = preventPrefix(prefix);
-    
-    if (isEmpty()) return false;
+    string prefixNoCentinela = prefix;
+    preventPrefix(prefix);
 
     Node* parent = root;
     Node* child = parent->getChild(0);
@@ -195,18 +224,27 @@ bool PTrie::isPrefix(string prefix) const {
         child = child->getChild(getBit(prefix, child->getBitPos()));
     }
 
-    return child->getKey().substr(0, prefix.length()) == prefix;
+    string childKey = child->getKey();
+    // `prefix` no pot ser prefix d'una paraula mes petita que ell 
+    if (childKey.length() < prefix.length()) return false;
+
+    // verifica la precondicio getPrefixed()
+    return childKey.substr(0, prefix.length() - 1) == prefixNoCentinela;
 }
 
 /*
     Precondicio: tots els descendents de Node van prefixats per prefix
-    ja ve donada per getPrefixed() public
+    ja ve donada per autocompleta()
 */
+// s'ha de treure el centinela 
 void PTrie::getPrefixed(const Node* node, set<string> &prefixed) {
     // anem recollint recursivament els terminals per cada branca
-    //if (node->isTerminal()) prefixed.insert(node->getKey());
-    if (node->getKey() != "") prefixed.insert(node->getKey());
-    for (int branch = 0; branch < 2; ++branch) {
+    //cout << "nodekey: " << "(" << node->getKey() << ")" << endl;
+    if (node->isTerminal()) {
+        string key = node->getKey(); key.pop_back();
+        prefixed.insert(key);
+    }
+    for (size_t branch = 0; branch < 2; ++branch) {
         Node* child = node->getChild(branch);
         if (node->getBitPos() < child->getBitPos()) {
             getPrefixed(child, prefixed);
@@ -214,39 +252,106 @@ void PTrie::getPrefixed(const Node* node, set<string> &prefixed) {
     }
 }
 
-set<string> PTrie::getPrefixed(string prefix) const {
-    verify(prefix);
-    if (prefix == "") {
-        return root->getKey() == "" ? set<string>{""} : set<string>();
-    }
-    prefix = preventPrefix(prefix);
+// s'ha de retornar el set de paraules pero sense el centinela
+set<string> PTrie::autocompleta(string prefix) const {
+    set<string> noMatch = set<string>();
+    if (!verify(prefix)) return noMatch;
+    if (isEmpty()) return noMatch;
 
-    if (isEmpty()) return set<string>();
+    /*
+    no hem de comptar el centinela jaque per definicio aquest no permet trobar
+    si existeixen paraules que comparteixin prefix
+    */
+    string prefixNoCentinela = prefix;
+    preventPrefix(prefix);
 
     Node* parent = root;
     Node* child = parent->getChild(0);
     Node* endPrefix = child;
     
-    int prefixBitLen = prefix.length() * 8;
+    size_t prefixBitLen = prefixNoCentinela.length() * 8;
     /*
     comportament identic a prefix pero guarda l'ultim node del que, en cas
     d'existir el prefix que busquem al trie, penjaran totes les paraules amb
     aquell prefix.  
     */
     while (parent->getBitPos() < child->getBitPos()) {
-        if (parent->getBitPos() < prefixBitLen) endPrefix = parent;
+        if (parent->getBitPos() < prefixBitLen) {
+            //endPrefix = parent;
+            endPrefix = child;
+        }
         parent = child;
         child = child->getChild(getBit(prefix, child->getBitPos()));
-        // if (child->getBitPos() < prefixBitLen) endPrefix = child;
     }
     
-    // verifica la precondicio getPrefixed() privat
-    if (child->getKey().substr(0, prefix.length()) != prefix) {
-        return set<string>();
+    string childKey = child->getKey();
+    // `prefix` no pot ser prefix d'una paraula mes petita que ell 
+    if (childKey.length() < prefix.length()) return noMatch;
+
+    // verifica la precondicio getPrefixed()
+    if (childKey.substr(0, prefix.length() - 1) != prefixNoCentinela) {
+        return noMatch;
     }
 
     set<string> prefixed;
     getPrefixed(endPrefix, prefixed);
 
     return prefixed;
+}
+
+void PTrie::calculateStats(const Node *node, Stats &stats, size_t height) const {
+    ++stats.numNodes;
+    // static, words, pos
+    auto mem = node->getMemoryUsage();
+    stats.staticMemory += get<0>(mem);
+    stats.wordsMemory += get<1>(mem);
+    stats.posMemory += get<2>(mem);
+
+    if (node->isTerminal()) {
+        stats.maxHeight = max(stats.maxHeight, height);
+        stats.totalHeight += height;
+        ++stats.numWords;
+        stats.totalWordlen += node->getKey().length();
+        return;
+    }
+    else {
+        calculateStats(node->getChild(0), stats, height + 1);
+        calculateStats(node->getChild(1), stats, height + 1);
+    }
+}
+
+void PTrie::printStats() const {
+    Stats stats;
+
+    // root es un dummy
+    if (!isEmpty()) calculateStats(root->getChild(0), stats, 0);
+    
+    float avgHeight = 0, avgWordLen = 0;
+    float avgHeightRatioWordLen = 0, avgNodeRatioWords = 0;
+
+    if (stats.numWords > 0) {
+        avgHeight = (float)stats.totalHeight / stats.numWords;
+        avgWordLen = (float)stats.totalWordlen / stats.numWords;
+        avgNodeRatioWords = (float)stats.numNodes / stats.numWords;
+    }
+    if (avgWordLen > 0) avgHeightRatioWordLen = avgHeight / avgWordLen;
+
+    size_t memory = stats.staticMemory + stats.wordsMemory + stats.posMemory;
+    cout << "\n=================================" << endl;
+    cout << "       Patricia trie stats" << endl;
+    cout << "---------------------------------" << endl;
+    cout << "> numNodes: " << stats.numNodes << "\n";
+    cout << "> numWords(terminals): " << stats.numWords << "\n";
+    cout << "> maxHeight: " << stats.maxHeight << "\n";
+    cout << "> avgHeight: " << avgHeight << "\n";
+    cout << "> avg word length: " << avgWordLen << "\n";
+    cout << "> avg height/wordLen: " << avgHeightRatioWordLen << "\n";
+    cout << "> avg Nodes/word: " << avgNodeRatioWords << endl;
+    cout << "\n---------------------------------" << endl;
+    cout << "MemoryUsage (bytes): " << memory << endl;
+    cout << "----------dividit entre----------" << endl;
+    cout << "> guardar les paraules: " << stats.wordsMemory << endl;
+    cout << "> guardar posicions en text: " << stats.posMemory << endl;
+    cout << "> altres: " << stats.staticMemory << endl;
+    cout << "=================================\n" << endl;
 }

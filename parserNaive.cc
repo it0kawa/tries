@@ -30,7 +30,7 @@ int main()
         return 1;
     }
 
-    Naive<int> trie;
+    Naive trie;
     string raw_word;
     int word_position = 1;
 
@@ -44,7 +44,7 @@ int main()
 
 
     // Prova
-    vector<int> alice_positions = trie.get("alice");
+    vector<size_t> alice_positions = trie.get("alice");
     assert(!alice_positions.empty());
     assert(alice_positions[0] == 35);
 
