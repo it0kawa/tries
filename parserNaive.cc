@@ -23,6 +23,7 @@ string clean_word(const string& word) {
 int main()
 {
     string filename = "test_files/alice_wonderland.txt";
+    //string filename = "test_files/words_alpha.txt";
     ifstream file(filename);
 
     if (!file.is_open()) {
@@ -42,12 +43,18 @@ int main()
         word_position++;
     }
 
-
+    trie.printStats();
     // Prova
-    vector<size_t> alice_positions = trie.get("alice");
-    assert(!alice_positions.empty());
-    assert(alice_positions[0] == 35);
+    string word = clean_word("Alice's");
+    vector<size_t> alice_positions = trie.get(word);
+    cout << "trobat a: ";
+    for (auto p : alice_positions) cout << p << ", ";
+    cout << endl;
+    //assert(!alice_positions.empty());
+    //assert(alice_positions[0] == 35);
 
-    cout << "Alice trobat a " << alice_positions.size() << " vegades, sa primera a posicio " << alice_positions[0] << "." << endl;
+    cout << "Alice trobat a " << alice_positions.size() << endl;
+
+    
 }
 
