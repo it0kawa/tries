@@ -15,7 +15,7 @@ using namespace std;
     + destructor
     + remove
 
-> falla getPositions i les stats, probablement problema amb insert/findNode
+> dubte amb early exit a findNode
 */
 
 class PTrie {

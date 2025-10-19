@@ -233,6 +233,85 @@ void testEdge() {
     cout << "> test edge cases correcte\n" << endl;
 }
 
+void test6() {
+    string test61[7] = {
+        "romane",
+        "romanus",
+        "romulus",
+        "rubens",
+        "ruber",
+        "rubicon",
+        "rubicundus"
+    };
+
+    string test62[6] = {
+        "Peter",
+        "Peck",
+        "Peppers",
+        "Piper",
+        "Picked",
+        "Pickled",
+    };
+
+    string test63[5] = {
+        "in",
+        "integer",
+        "interval",
+        "string",
+        "structure",
+    };
+
+    PTrie t;
+    size_t pos = 1;
+    for (string s : test61) {
+        t.insert(s, pos);
+        ++pos;
+    } 
+    for (string s : test61) {
+        t.insert(s, pos);
+        ++pos;
+    } 
+    for (string s : test61) {
+        t.insert(s, pos);
+        ++pos;
+    } 
+    for (string s : test61) {
+        vector<size_t> tp = t.getPositions(s);
+        cout << "tenim (" << s << "): ";
+        for (size_t p : tp) cout << p << ", ";
+        cout << endl;
+    } 
+    t.printStats();
+    cout << endl << endl;
+    PTrie t1;
+    size_t pos1 = 1;
+    for (string s : test62) {
+        t1.insert(s, pos1);
+        ++pos1;
+    } 
+    for (string s : test62) {
+        vector<size_t> tp = t1.getPositions(s);
+        cout << "tenim (" << s << "): ";
+        for (size_t p : tp) cout << p << ", ";
+        cout << endl;
+    } 
+    t1.printStats();
+    cout << endl << endl;
+    PTrie t2;
+    size_t pos2 = 1;
+    for (string s : test63) {
+        t2.insert(s, pos2);
+        ++pos2;
+    } 
+    for (string s : test63) {
+        vector<size_t> tp = t2.getPositions(s);
+        cout << "tenim (" << s << "): ";
+        for (size_t p : tp) cout << p << ", ";
+        cout << endl;
+    } 
+    t2.printStats();
+}
+
 int main() {
     test0();
     test1();
@@ -241,4 +320,6 @@ int main() {
     test4();
     test5();
     testEdge();
+    cout << "new----------------------" << endl << endl << endl;
+    test6();
 }

@@ -1,16 +1,19 @@
 #include "patriciaTrie.hh"
 #include <stdexcept>
 
-///////////////////// Node 
-PTrie::Node::Node(size_t bit, const string &key, int pos) 
-    : bit(bit),     
-    key(key)  
-{   
+///////////////////// Node
+PTrie::Node::Node(size_t bit, const string &key, int pos)
+    : bit(bit),
+    key(key)
+{
     child[0] = this; child[1] = this;
     if (pos >= 0) textPos = vector<size_t>{(size_t)pos};
 }
 
-bool PTrie::Node::isTerminal() const { return bit == TERMINALNODE; }
+bool PTrie::Node::isTerminal() const {
+    //return bit == TERMINALNODE;
+    return (child[0] == this) && (child[1] == this);
+}
 
 size_t PTrie::Node::getBitPos() const { return bit; }
 
@@ -47,7 +50,7 @@ tuple<size_t, size_t, size_t> PTrie::Node::getMemoryUsage() const {
 ///////////////////// Trie
 PTrie::PTrie() : root(new Node(0, "~")) {}
 
-// si el trie te algun element, sempre sera root[0] accessible, si root[0] 
+// si el trie te algun element, sempre sera root[0] accessible, si root[0]
 // apunta a ell mateix el trie es buit.
 bool PTrie::isEmpty() const {
    return root->getChild(0) == root;
@@ -86,7 +89,7 @@ Big endian. la part dels ASCII que acostumem a trobar en textos comparteixen
 un prefix igual molt mes llarg que el sufix, per tant, el path compression
 es lleugerament mes eficient en memoria amb big endian que amb little endian
 ja que requereix menys nodes interemedis.
-*/ 
+*/
 bool PTrie::getBit(const string &key, size_t i) {
     // agafem el byte
     size_t index = i / 8;
@@ -96,9 +99,9 @@ bool PTrie::getBit(const string &key, size_t i) {
     return ((unsigned char)key[index] >> bit) & 1;
 }
 
-/* 
+/*
 busca un node donada una paraula `key`
-precondicio: 
+precondicio:
     - `key` es correcte
     - s'ha afegit centinela a `key`
     - Trie not empty
@@ -111,43 +114,43 @@ postcondicio:
 */
 PTrie::Node *PTrie::findNode(const string &key) const
 {
+    /*
+    // No funciona un early exit pero no se per que
+    
+    Veiem per que podem fer un early exit:
+    - Trie garanteix que per tot node, bit parent < bit child.
+    Veiem que si entrem a la condicio < keylen, aixo vol dir que parent es
+    terminal o la paraula es mes curta que el path en el que estem. 
+    Si == TERMINALNODE es terminal i es el candidat,
+    Si no, veiem que aleshores veiem que les paraules en el path de `key` son
+    mes llargues que `key` i per tant `key` no pertany al trie 
+    */
+
     Node* parent = root;
     // root[1] mai tindra elements
     Node* child = parent->getChild(0);
 
-    size_t keyBitLen = key.length() * 8;
-    
-    /*
-    Veiem perque podem fer un early exit:
-    - Trie garanteix que per tot node, bit parent < bit child.
-    Veiem que si entrem a la condicio < keylen, aixo vol dir que parent no es
-    terminal, ja que si ho fos el seu fill apuntaria a ell mateix trencant la
-    invariant. Per tant, si pare no es terminal i te una diferencia a un bit
-    major que keylen, aleshores `key` no esta al trie
-
-    Per que parent.bit < keylen i no child.bi < keylen? si child terminal i 
-    parent no terminal, child.bit = TERMINALNODE > keylen pero encara pot 
-    contenir `key`
-    */
-    while (parent->getBitPos() < child->getBitPos() &&
-        parent->getBitPos() < keyBitLen)
-    {
+    //size_t keyBitLen = key.length() * 8;
+    while (parent->getBitPos() < child->getBitPos()) {
+        // if (parent->getBitPos() > keyBitLen && !parent->isTerminal()) {
+        //     // `key` no esta al trie
+        //     return parent;
+        // }
         parent = child;
         child = child->getChild(getBit(key, child->getBitPos()));
     }
-
     return child;
 }
 
 void PTrie::insert(string key, size_t pos) {
     if (!verify(key)) return;
     preventPrefix(key);
-    
+
     if (isEmpty()) {
         root->setChild(0, new Node(TERMINALNODE, key, pos));
         return;
     }
-    
+
     Node* child = findNode(key);
 
     // si la paraula ja pertany al trie retornem sense inserir pero afegim pos
@@ -162,24 +165,16 @@ void PTrie::insert(string key, size_t pos) {
     Node* parent = root;
     child = root->getChild(0);
 
-    while (getBit(key, diffBit) == getBit(childKey, diffBit) && 
+    while (getBit(key, diffBit) == getBit(childKey, diffBit) &&
         diffBit <= overlappedPath)
     {
         ++diffBit;
-        // els increments de diffBit son de 1 en 1, per tant, amb un if per 
+        // els increments de diffBit son de 1 en 1, per tant, amb un if per
         // iteracio assegurem que seleccionem el node correcte
-        // if (child->getBitPos() < diffBit) {
-        //     parent = child;
-        //     child = child->getChild(getBit(key, child->getBitPos()));
-        // }
-    }
-    
-    parent = root; child = root->getChild(0);
-    while (parent->getBitPos() < child->getBitPos() &&
-        child->getBitPos() < diffBit)
-    {
-        parent = child;
-        child = child->getChild(getBit(key, child->getBitPos()));
+        if (child->getBitPos() < diffBit) {
+            parent = child;
+            child = child->getChild(getBit(key, child->getBitPos()));
+        }
     }
 
     Node* newNode = new Node(diffBit);
@@ -206,15 +201,15 @@ vector<size_t> PTrie::getPositions(string key) const
     vector<size_t> noMatch = vector<size_t>();
     if (!verify(key) || isEmpty()) return noMatch;
     preventPrefix(key);
-    
+
     Node* node = findNode(key);
 
-    if (node->getKey() == key) return node->getTextPos();    
+    if (node->getKey() == key) return node->getTextPos();
     return noMatch;
 }
 
 /*
-Al contrari que amb findNode aqui no podem fer early return ja que hem 
+Al contrari que amb findNode aqui no podem fer early return ja que hem
 d'arribar a un node terminal per comprobar si el seu prefix es el que busquem
 */
 bool PTrie::isPrefix(string prefix) const {
@@ -232,7 +227,7 @@ bool PTrie::isPrefix(string prefix) const {
     }
 
     string childKey = child->getKey();
-    // `prefix` no pot ser prefix d'una paraula mes petita que ell 
+    // `prefix` no pot ser prefix d'una paraula mes petita que ell
     if (childKey.length() < prefix.length()) return false;
 
     // verifica la precondicio getPrefixed()
@@ -243,10 +238,9 @@ bool PTrie::isPrefix(string prefix) const {
     Precondicio: tots els descendents de Node van prefixats per prefix
     ja ve donada per autocompleta()
 */
-// s'ha de treure el centinela 
+// s'ha de treure el centinela
 void PTrie::getPrefixed(const Node* node, set<string> &prefixed) {
     // anem recollint recursivament els terminals per cada branca
-    //cout << "nodekey: " << "(" << node->getKey() << ")" << endl;
     if (node->isTerminal()) {
         string key = node->getKey(); key.pop_back();
         prefixed.insert(key);
@@ -275,12 +269,12 @@ set<string> PTrie::autocompleta(string prefix) const {
     Node* parent = root;
     Node* child = parent->getChild(0);
     Node* endPrefix = child;
-    
+
     size_t prefixBitLen = prefixNoCentinela.length() * 8;
     /*
     comportament identic a prefix pero guarda l'ultim node del que, en cas
     d'existir el prefix que busquem al trie, penjaran totes les paraules amb
-    aquell prefix.  
+    aquell prefix.
     */
     while (parent->getBitPos() < child->getBitPos()) {
         if (parent->getBitPos() < prefixBitLen) {
@@ -290,9 +284,9 @@ set<string> PTrie::autocompleta(string prefix) const {
         parent = child;
         child = child->getChild(getBit(prefix, child->getBitPos()));
     }
-    
+
     string childKey = child->getKey();
-    // `prefix` no pot ser prefix d'una paraula mes petita que ell 
+    // `prefix` no pot ser prefix d'una paraula mes petita que ell
     if (childKey.length() < prefix.length()) return noMatch;
 
     // verifica la precondicio getPrefixed()
@@ -320,23 +314,29 @@ void PTrie::calculateStats(const Node *node, Stats &stats, size_t height) const 
         ++stats.numWords;
         // no es comtpa el centinela
         stats.totalWordlen += node->getKey().length() - 1;
+        // cout << "word: " << node->getKey()
+        //     << "  height: " << height
+        //     << "  bitIndex: " << node->getBitPos()
+        //     << "  child0: " << node->getChild(0)
+        //     << "  child1: " << node->getChild(1)
+        //     << endl;
         return;
     }
     else {
         Node* child0 = node->getChild(0);
         Node* child1 = node->getChild(1);
-        
-        calculateStats(child0, stats, height + 1);
-        calculateStats(child1, stats, height + 1);
+        height += 1;
+        calculateStats(child0, stats, height);
+        calculateStats(child1, stats, height);
     }
 }
 
 void PTrie::printStats() const {
     Stats stats;
 
-    // root es un dummy 
-    if (!isEmpty()) calculateStats(root->getChild(0), stats, 0);
-    
+    // root es un dummy
+    if (!isEmpty()) calculateStats(root->getChild(0), stats, 1);
+
     float avgHeight = 0, avgWordLen = 0;
     float avgHeightRatioWordLen = 0, avgNodeRatioWords = 0;
 
@@ -353,8 +353,8 @@ void PTrie::printStats() const {
     cout << "---------------------------------" << endl;
     cout << "> numNodes: " << stats.numNodes << "\n";
     cout << "> numWords(terminals): " << stats.numWords << "\n";
-    cout << "> maxHeight: " << stats.maxHeight << "\n";
-    cout << "> avgHeight: " << avgHeight << "\n";
+    cout << "> maxHeight (bits): " << stats.maxHeight << "\n";
+    cout << "> avgHeight (bits): " << avgHeight << "\n";
     cout << "> avg word length (bytes): " << avgWordLen << "\n";
     cout << "> avg height/wordLen (bytes): " << avgHeightRatioWordLen << "\n";
     cout << "> avg Nodes/word: " << avgNodeRatioWords << endl;
