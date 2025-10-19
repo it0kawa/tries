@@ -14,6 +14,8 @@ using namespace std;
 > Implementacio d'un patricia trie sense:
     + destructor
     + remove
+
+> falla getPositions i les stats, probablement problema amb insert/findNode
 */
 
 class PTrie {
@@ -32,7 +34,7 @@ private:
         vector<size_t> textPos;
 
     public:
-        Node(size_t bit, const string &key = "", int pos = 0);
+        Node(size_t bit, const string &key = "", int pos = -1);
         // retorna cert si el node es terminal, fals en cas contrari
         bool isTerminal() const;
 

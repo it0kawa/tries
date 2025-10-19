@@ -37,11 +37,10 @@ tuple<size_t, size_t, size_t> PTrie::Node::getMemoryUsage() const {
     // no inclou la memoria dinamica
     size_t staticMem = sizeof(*this);
 
-    // potser hauria de fer servir capacity en comptes de length/size?
     // afegim la memoria dinamica del string
-    size_t wordsMem = sizeof(char) * key.length();
+    size_t wordsMem = sizeof(char) * key.capacity();
     // afegim la memoria dinamica del vector
-    size_t posMem = sizeof(size_t) * textPos.size();
+    size_t posMem = sizeof(size_t) * textPos.capacity();
     return {staticMem, wordsMem, posMem};
 }
 
@@ -169,12 +168,20 @@ void PTrie::insert(string key, size_t pos) {
         ++diffBit;
         // els increments de diffBit son de 1 en 1, per tant, amb un if per 
         // iteracio assegurem que seleccionem el node correcte
-        if (child->getBitPos() < diffBit) {
-            parent = child;
-            child = child->getChild(getBit(key, child->getBitPos()));
-        }
+        // if (child->getBitPos() < diffBit) {
+        //     parent = child;
+        //     child = child->getChild(getBit(key, child->getBitPos()));
+        // }
     }
     
+    parent = root; child = root->getChild(0);
+    while (parent->getBitPos() < child->getBitPos() &&
+        child->getBitPos() < diffBit)
+    {
+        parent = child;
+        child = child->getChild(getBit(key, child->getBitPos()));
+    }
+
     Node* newNode = new Node(diffBit);
     bool branch = getBit(key, diffBit);
     newNode->setChild(branch, new Node(TERMINALNODE, key, pos));
@@ -316,8 +323,11 @@ void PTrie::calculateStats(const Node *node, Stats &stats, size_t height) const 
         return;
     }
     else {
-        calculateStats(node->getChild(0), stats, height + 1);
-        calculateStats(node->getChild(1), stats, height + 1);
+        Node* child0 = node->getChild(0);
+        Node* child1 = node->getChild(1);
+        
+        calculateStats(child0, stats, height + 1);
+        calculateStats(child1, stats, height + 1);
     }
 }
 

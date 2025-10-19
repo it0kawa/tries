@@ -174,10 +174,12 @@ void test4() {
     for (string s : tests) {
         t.insert(s, pos);
         m[s].push_back(pos);
+        ++pos;
     } 
     for (string s : tests) {
         t.insert(s, pos);
         m[s].push_back(pos);
+        ++pos;
     } 
     for (string s : noInsertedTests) {
         t.insert(s, pos);
@@ -196,6 +198,26 @@ void test4() {
     cout << "> test 4 (getPoscions) correcte\n" << endl;
 }
 
+void test5() {
+    string w = "Alice's";
+    PTrie t;
+    size_t pos = 0;
+    for (string s : tests) {
+        t.insert(s, pos);
+        ++pos;
+    } 
+    assert(t.getPositions(w) == vector<size_t>());
+    assert(!t.contains(w));
+    t.insert(w, pos);
+    t.insert(w, pos+1);
+    t.insert(w, pos+2);
+    assert(t.getPositions(w) != vector<size_t>());
+    cout << "trobat a pos: ";
+    for (auto p : t.getPositions(w)) cout << p << ", ";
+    cout << endl;
+    assert(t.contains(w));
+    t.printStats();
+}
 void testEdge() {
     PTrie t;
     string edge1 = "blablabla";
@@ -217,5 +239,6 @@ int main() {
     test2();
     test3();
     test4();
+    test5();
     testEdge();
 }
