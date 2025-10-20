@@ -6,7 +6,7 @@ testNaive:
 	g++ $(FLAGS) -o testNaive.x testNaive.cpp naive.cpp
 
 testTst:
-	g++ $(FLAGS) -o testTst.x testTst.cpp
+	g++ $(FLAGS) -o testTst.x testTst.cpp tst.cpp
 
 testPatricia:
 	g++ $(FLAGS) -o testPatricia.x ./patricia/patriciaTrie.cpp \

@@ -2,6 +2,7 @@
     "files.associations": {
         "*.asl": "asl",
         "xstring": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "vector": "cpp"
     }
 }
