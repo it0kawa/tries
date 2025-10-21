@@ -340,6 +340,7 @@ void OPTrie::calculateStatsNode(const Node *node, Stats &stats, size_t height) c
 }
 
 void OPTrie::calculateStatsTrie(Stats &stats) const {
+    stats.staticMemory += sizeof(InfoNode*) * infoNodes.capacity();
     for (const auto node : infoNodes) {
         stats.staticMemory += sizeof(InfoNode);
         stats.wordsMemory += node->key.capacity() * sizeof(char);
@@ -398,6 +399,7 @@ Stats OPTrie::getStats() const {
     }
     if (stats.avgWordLen > 0) {
         stats.avgHeightRatioWordLen = stats.avgHeight / stats.avgWordLen;
+        stats.avgNodeRatioWordLen = stats.numNodes / stats.avgWordLen;
     }
     stats.totalMemory = stats.staticMemory + stats.wordsMemory + stats.posMemory;
     
@@ -423,6 +425,6 @@ void OPTrie::printStats() const {
     cout << "----------dividit entre----------" << endl;
     cout << "> guardar les paraules: " << stats.wordsMemory << endl;
     cout << "> guardar posicions en text: " << stats.posMemory << endl;
-    cout << "> altres(static node memory): " << stats.staticMemory << endl;
+    cout << "> static node memory: " << stats.staticMemory << endl;
     cout << "=================================\n" << endl;
 }
