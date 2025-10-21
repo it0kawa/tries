@@ -5,12 +5,13 @@ Naive::Node::Node() : is_terminal(false), textPos(), childs() {}
 
 Naive::Node::Node(const vector<size_t> &vals): textPos(vals), childs() {}
 
-pair<size_t, size_t> Naive::Node::getMemoryUsage() const {
+vector<size_t> Naive::Node::getMemoryUsage() const {
     // no inclou la memoria dinamica
     size_t staticMem = sizeof(*this);
     // afegim la memoria dinamica del vector
     size_t posMem = sizeof(size_t) * textPos.size();
-    return {staticMem, posMem};
+    size_t valMem = 0;
+    return {staticMem, posMem, valMem};
 }
 
 vector<size_t> Naive::Node::getTextPos() const { return textPos; }
@@ -20,22 +21,28 @@ Naive::Node* Naive::Node::getChild(unsigned char c) const {
 }
 
 void Naive::Node::putTextPos(const size_t &val) { 
-    textPos.push_back(val); 
-    is_terminal = true;
+    textPos.push_back(val);
 }
 
 void Naive::Node::setChild(unsigned char c, Naive::Node* node) { childs[c] = node; }
+
+void Naive::Node::setTerminal(bool b) { is_terminal = b; }
+
+bool Naive::Node::isTerminal() const { return is_terminal; }
+
+
 
 Naive::Node* Naive::put(
     Naive::Node* node, const string &key, const size_t &val,size_t d) {
 
     if (d == key.length()) { node->putTextPos(val); return node; }
     unsigned char c = key[d];
-    if (node->getChild(c) == nullptr) node->setChild(c, new Node());
+    node->setTerminal(false); // si o si es posa un nou node a partir d'aquest
+    if (node->getChild(c) == nullptr) { node->setChild(c, new Node()); node->getChild(c)->setTerminal(true); }
     return put(node->getChild(c), key, val, d + 1);
 }    
 
-bool Naive::Node::isTerminal() const { return is_terminal; }
+
 
 
 /////////////// trie
@@ -65,12 +72,18 @@ bool Naive::contains(const string &key) const {
     return true;
 }
 
-void Naive::calculateStats(const Node *node, Stats &stats, size_t height) const {
+void Naive::calculateStats(const Node *node, Stats &stats, size_t height) {
     ++stats.numNodes;
 
+    // si un node es fulla segur que la paraula que representa la fulla esta al dataset
     if (node->isTerminal()) {
+        ++stats.numNodesTerminals;
         stats.maxHeight = max(stats.maxHeight, height);
         stats.totalHeight += height;
+    }
+    // si el vector te algun valor llavors aquella paraula que representa el node esta al dataset
+    // pero poden haber nodes que estan al dataset pero no son fulles
+    if (node->getTextPos().size() > 0) {
         stats.totalWordlen += height;
         ++stats.numWords;
     }
@@ -78,46 +91,59 @@ void Naive::calculateStats(const Node *node, Stats &stats, size_t height) const 
         Node* child = node->getChild(i);
         if (child == nullptr) continue;
         
-        pair<size_t, size_t> mem = child->getMemoryUsage();
-        stats.staticMemory += mem.first;
-        stats.posMemory += mem.second;
+        vector<size_t> mem = child->getMemoryUsage();
+        stats.staticMemory += mem[0];
+        stats.posMemory += mem[1];
+        stats.valMemory += mem[2];
         
         calculateStats(child, stats, height + 1);
     }
 }
 
-void Naive::printStats() const {
+Stats Naive::calculateStats() {
     Stats stats;
-
     calculateStats(root, stats, 0);
-    
-    float avgHeight = 0, avgWordLen = 0;
-    float avgHeightRatioWordLen = 0, avgNodeRatioWordLen = 0;
+
     if (stats.numWords > 0) {
-        avgHeight = (float)stats.totalHeight / stats.numWords;
-        avgWordLen = (float)stats.totalWordlen / stats.numWords;
+        stats.avgHeight = (float)stats.totalHeight / stats.numNodesTerminals;
+        stats.avgWordLen = (float)stats.totalWordlen / stats.numWords;
     }
-    if (avgWordLen > 0) {
-        avgHeightRatioWordLen = avgHeight / avgWordLen;
-        avgNodeRatioWordLen = stats.numNodes / avgWordLen;
+    if (stats.avgWordLen > 0) {
+        stats.avgHeightRatioWordLen = stats.avgHeight / stats.avgWordLen;
+        stats.avgNodeRatioWordLen = stats.numNodes / stats.avgWordLen;
     }
 
-    size_t memory = stats.staticMemory + stats.posMemory;
+    stats.nodesMemory = stats.posMemory + stats.valMemory;
+    stats.totalMemory = stats.staticMemory + stats.nodesMemory;
+
+    return stats;
+}
+
+// Naive public:
+
+Stats Naive::getStats() {
+    return calculateStats();
+}
+
+void Naive::printStats() {
+    Stats stats = calculateStats();
+
     cout << "\n=================================" << endl;
     cout << "       Naive trie stats" << endl;
     cout << "---------------------------------" << endl;
     cout << "> numNodes: " << stats.numNodes << "\n";
-    cout << "> numWords(terminals): " << stats.numWords << "\n";
+    cout << "> numWords(terminals): " << stats.numNodesTerminals << "\n";
     cout << "> maxHeight: " << stats.maxHeight << "\n";
-    cout << "> avgHeight: " << avgHeight << "\n";
-    cout << "> avg word length: " << avgWordLen << "\n";
-    cout << "> avg height/wordLen: " << avgHeightRatioWordLen << "\n";
-    cout << "> avg Node/wordLen: " << avgNodeRatioWordLen << endl;
+    cout << "> avgHeight: " << stats.avgHeight << "\n";
+    cout << "> avg word length: " << stats.avgWordLen << "\n";
+    cout << "> avg height/wordLen: " << stats.avgHeightRatioWordLen << "\n";
+    cout << "> avg Node/wordLen: " << stats.avgNodeRatioWordLen << endl;
     cout << "\n---------------------------------" << endl;
-    cout << "MemoryUsage (bytes): " << memory << endl;
+    cout << "MemoryUsage (bytes): " << stats.totalMemory << endl;
     cout << "----------dividit entre----------" << endl;
-    cout << "> guardar les paraules: N/A" << endl;
-    cout << "> guardar posicions en text: " << stats.posMemory << endl;
+    cout << "> guardar les paraules en el trie: " << stats.valMemory << endl;
+    cout << "> guardar les posicions en el trie: " << stats.posMemory << endl;
+    cout << "> nodes del trie: " << stats.nodesMemory << endl;
     cout << "> altres: " << stats.staticMemory << endl;
     cout << "=================================\n" << endl;
 }
