@@ -1,5 +1,5 @@
-#ifndef PATRICIATRIE_HH
-#define PATRICIATRIE_HH
+#ifndef OPTIMIZEDPATRICIATRIE_HH
+#define OPTIMIZEDPATRICIATRIE_HH
 
 #include <climits>
 #include <iostream>
@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <memory>
 
 using namespace std;
 
@@ -15,40 +16,46 @@ using namespace std;
     + destructor
     + remove
 
-> dubte amb early exit a findNode
+> optimitzacio:
+    per estalviarn-nos la memoria estatica del vector i string buits de cada
+    node intermediari (tenim aprox n/2 nodes intermediaris per tests grans)
+
+    declararem un vector al trie amb aquesta informacio i als nodes simplement
+    guardarem l'index per accedir-hi, sera INDEXINTERMEDIARI per els intermediaris.
+
+    Funciona sota la premisa que mai s'eliminen paraules i que per tant, els
+    mai canviaran.
 */
 
-class PTrie {
+class OPTrie {
 private:
     // bit position per identificar nodes terminals facilment
-    static const size_t TERMINALNODE = INT_MAX;
+    static constexpr size_t TERMINALNODE = INT_MAX;
+    static constexpr size_t INDEXINTERMEDIARI = INT_MAX;
     class Node {
     private:
         // node que representa l'i-essim bit de differencia en el trie
         size_t bit;
-        // empty string si es intermaedi
-        string key;
-        // 0-branch i 1-branch
+        
+        size_t index;
+
         Node* child[2];
-        // posicions que ocupa la paraula dins del text
-        vector<size_t> textPos;
 
     public:
-        Node(size_t bit, const string &key = "", int pos = -1);
+        Node(size_t bit, size_t index=INDEXINTERMEDIARI);
         // retorna cert si el node es terminal, fals en cas contrari
         bool isTerminal() const;
 
         // getters 
         size_t getBitPos() const;
-        vector<size_t> getTextPos();
-        const string& getKey() const;
+        size_t getIndex() const;
         Node* getChild(bool branch) const;
-        // retorna una tuple de memoria estatica, i dinamica per string i vector
-        tuple<size_t, size_t, size_t> getMemoryUsage() const;
+
+        // retorna la memoria (estatica unicament) del node
+        size_t getMemoryUsage() const;
         
         // setters
-        void addTextPos(int pos);
-        void setKey(const string key);
+        void setIndex(size_t index);
         void setChild(bool branch, Node* node);
     };
 
@@ -63,6 +70,11 @@ private:
         size_t posMemory = 0;
     };  
 
+    struct InfoNode {
+        string key;
+        vector<size_t> textPos;
+    };
+
     Node* root;
 
     // afegeix un centinela per satisfer la precondicio descrita a la implementacio
@@ -73,12 +85,23 @@ private:
     static bool getBit(const string &key, size_t i);
     
     // helpers
-    static void getPrefixed(const Node* node, set<string> &prefixed);
+    void getPrefixed(const Node* node, set<string> &prefixed) const;
     Node* findNode(const string &key) const;
-    void calculateStats(const Node* node, Stats &stats, size_t height) const;
+    void calculateStatsNode(const Node* node, Stats &stats, size_t height) const;
+    void calculateStatsTrie(Stats &stats) const;
+
+    //node management
+    vector<InfoNode*> infoNodes;
+
+    void addTextPos(const Node* node, size_t pos);
+    void setKey(const Node* node, const string key);
+
+    vector<size_t> getTextPos(const Node* node) const;
+    const string& getKey(const Node* node) const;
+    Node* makeTerminalNode(const string key, size_t pos);
 
 public:
-    PTrie();
+    OPTrie(int numwords = -1);
     // inserta i actualitza el vector de posicions dins del text per la paraula `key`
     void insert(string key, size_t pos);
     // retorna cert si key forma part del trie
