@@ -27,6 +27,25 @@ using namespace std;
     mai canviaran.
 */
 
+struct Stats {
+    size_t maxHeight = 0;
+    size_t totalHeight = 0;
+    size_t numNodes = 0;
+    size_t numWords = 0;
+    size_t totalWordlen = 0;
+    size_t staticMemory = 0;
+    size_t wordsMemory = 0;
+    size_t posMemory = 0;
+    size_t totalMemory = 0;
+
+    float avgHeight = 0.0;
+    float avgWordLen = 0.0;
+    float avgHeightRatioWordLen = 0.0;
+    float avgNodeRatioWordLen = 0.0;
+    float avgNodeRatioWords = 0.0;
+};  
+
+
 class OPTrie {
 private:
     // bit position per identificar nodes terminals facilment
@@ -59,17 +78,6 @@ private:
         void setChild(bool branch, Node* node);
     };
 
-    struct Stats {
-        size_t maxHeight = 0;
-        size_t totalHeight = 0;
-        size_t numNodes = 0;
-        size_t numWords = 0;
-        size_t totalWordlen = 0;
-        size_t staticMemory = 0;
-        size_t wordsMemory = 0;
-        size_t posMemory = 0;
-    };  
-
     struct InfoNode {
         string key;
         vector<size_t> textPos;
@@ -87,18 +95,23 @@ private:
     // helpers
     void getPrefixed(const Node* node, set<string> &prefixed) const;
     Node* findNode(const string &key) const;
-    void calculateStatsNode(const Node* node, Stats &stats, size_t height) const;
-    void calculateStatsTrie(Stats &stats) const;
-
+    
     //node management
     vector<InfoNode*> infoNodes;
+    
+    Node* makeTerminalNode(const string key, size_t pos);
 
     void addTextPos(const Node* node, size_t pos);
     void setKey(const Node* node, const string key);
 
     vector<size_t> getTextPos(const Node* node) const;
     const string& getKey(const Node* node) const;
-    Node* makeTerminalNode(const string key, size_t pos);
+
+    // per experiments=
+    void calculateStats(Stats &stats) const;
+    void calculateStatsNode(const Node* node, Stats &stats, size_t height) const;
+    void calculateStatsTrie(Stats &stats) const;
+    pair<Node*, size_t> findNodeAndPathLen(const string &key) const;
 
 public:
     OPTrie(int numwords = -1);
@@ -112,10 +125,18 @@ public:
     bool isPrefix(string prefix) const;
     // retorna el set de paraules prefixades per `prefix` del trie
     set<string> autocompleta(string prefix) const;
-    // printa les estadistiques referents al trie
-    void printStats() const;
+
     // retorna True si el trie es buit (nomes conte el node root)
     bool isEmpty() const;
+
+    // per experiments
+        // printa les estadistiques referents al trie
+    void printStats() const;
+        // rettorna les estadistiques referents al trie
+    Stats getStats() const;
+        // retorna size_t 0 en cas d'error
+    pair<vector<size_t>, size_t> getPositionsAndPathLen(string key) const;
+    pair<bool, size_t> containsAndPathLen(string key) const;
 };
 
 #endif

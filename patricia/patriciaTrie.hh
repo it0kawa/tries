@@ -18,6 +18,24 @@ using namespace std;
 > dubte amb early exit a findNode
 */
 
+struct Stats {
+    size_t maxHeight = 0;
+    size_t totalHeight = 0;
+    size_t numNodes = 0;
+    size_t numWords = 0;
+    size_t totalWordlen = 0;
+    size_t staticMemory = 0;
+    size_t wordsMemory = 0;
+    size_t posMemory = 0;
+    size_t totalMemory = 0;
+
+    float avgHeight = 0.0;
+    float avgWordLen = 0.0;
+    float avgHeightRatioWordLen = 0.0;
+    float avgNodeRatioWordLen = 0.0;
+    float avgNodeRatioWords = 0.0;
+};  
+
 class PTrie {
 private:
     // bit position per identificar nodes terminals facilment
@@ -52,17 +70,6 @@ private:
         void setChild(bool branch, Node* node);
     };
 
-    struct Stats {
-        size_t maxHeight = 0;
-        size_t totalHeight = 0;
-        size_t numNodes = 0;
-        size_t numWords = 0;
-        size_t totalWordlen = 0;
-        size_t staticMemory = 0;
-        size_t wordsMemory = 0;
-        size_t posMemory = 0;
-    };  
-
     Node* root;
 
     // afegeix un centinela per satisfer la precondicio descrita a la implementacio
@@ -77,6 +84,9 @@ private:
     Node* findNode(const string &key) const;
     void calculateStats(const Node* node, Stats &stats, size_t height) const;
 
+    // per experiments
+    pair<Node*, size_t> findNodeAndPathLen(const string &key) const;
+
 public:
     PTrie();
     // inserta i actualitza el vector de posicions dins del text per la paraula `key`
@@ -89,10 +99,17 @@ public:
     bool isPrefix(string prefix) const;
     // retorna el set de paraules prefixades per `prefix` del trie
     set<string> autocompleta(string prefix) const;
-    // printa les estadistiques referents al trie
-    void printStats() const;
     // retorna True si el trie es buit (nomes conte el node root)
     bool isEmpty() const;
+
+    // per experiments
+        // printa les estadistiques referents al trie
+    void printStats() const;
+        // rettorna les estadistiques referents al trie
+    Stats getStats() const;
+        // retorna size_t 0 en cas d'error
+    pair<vector<size_t>, size_t> getPositionsAndPathLen(string key) const;
+    pair<bool, size_t> containsAndPathLen(string key) const;
 };
 
 #endif

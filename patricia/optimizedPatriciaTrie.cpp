@@ -315,6 +315,8 @@ set<string> OPTrie::autocompleta(string prefix) const {
     return prefixed;
 }
 
+//// expermients
+
 void OPTrie::calculateStatsNode(const Node *node, Stats &stats, size_t height) const {
     ++stats.numNodes;
     // static, words, pos
@@ -345,38 +347,79 @@ void OPTrie::calculateStatsTrie(Stats &stats) const {
     }
 }
 
-void OPTrie::printStats() const {
+void OPTrie::calculateStats(Stats &stats) const {
+    calculateStatsNode(root->getChild(0), stats, 1);
+    calculateStatsTrie(stats);
+}
+
+pair<OPTrie::Node *, size_t> OPTrie::findNodeAndPathLen(const string &key) const {
+    Node* parent = root;
+    // root[1] mai tindra elements
+    Node* child = parent->getChild(0);
+
+    size_t path = 1;
+    while (parent->getBitPos() < child->getBitPos()) {
+        parent = child;
+        child = child->getChild(getBit(key, child->getBitPos()));
+        ++path;
+    }
+    return {child, path};
+}
+
+pair<vector<size_t>, size_t> OPTrie::getPositionsAndPathLen(string key) const {
+    vector<size_t> noMatch = vector<size_t>();
+    if (!verify(key) || isEmpty()) return {noMatch, 0};
+    preventPrefix(key);
+
+    pair<Node*, size_t> p = findNodeAndPathLen(key);
+    
+    if (getKey(p.first) == key) return {getTextPos(p.first), p.second};
+    return {noMatch, 0};
+}
+
+pair<bool, size_t> OPTrie::containsAndPathLen(string key) const {
+    if (!verify(key) || isEmpty()) return {false, 0};
+    preventPrefix(key);
+
+    pair<Node*, size_t> p = findNodeAndPathLen(key);
+    return {getKey(p.first) == key, p.second};
+}
+
+Stats OPTrie::getStats() const {
     Stats stats;
 
     // root es un dummy
-    if (!isEmpty()) {
-        calculateStatsNode(root->getChild(0), stats, 1);
-        calculateStatsTrie(stats);
-    }
-
-    float avgHeight = 0, avgWordLen = 0;
-    float avgHeightRatioWordLen = 0, avgNodeRatioWords = 0;
+    if (!isEmpty()) calculateStats(stats);
 
     if (stats.numWords > 0) {
-        avgHeight = (float)stats.totalHeight / stats.numWords;
-        avgWordLen = (float)stats.totalWordlen / stats.numWords;
-        avgNodeRatioWords = (float)stats.numNodes / stats.numWords;
+        stats.avgHeight = (float)stats.totalHeight / stats.numWords;
+        stats.avgWordLen = (float)stats.totalWordlen / stats.numWords;
+        stats.avgNodeRatioWords = (float)stats.numNodes / stats.numWords;
     }
-    if (avgWordLen > 0) avgHeightRatioWordLen = avgHeight / avgWordLen;
+    if (stats.avgWordLen > 0) {
+        stats.avgHeightRatioWordLen = stats.avgHeight / stats.avgWordLen;
+    }
+    stats.totalMemory = stats.staticMemory + stats.wordsMemory + stats.posMemory;
+    
+    return stats;
+}
 
-    size_t memory = stats.staticMemory + stats.wordsMemory + stats.posMemory;
+void OPTrie::printStats() const {
+    Stats stats = getStats();
+
     cout << "\n=================================" << endl;
     cout << "    OPT Patricia trie stats" << endl;
     cout << "---------------------------------" << endl;
     cout << "> numNodes: " << stats.numNodes << "\n";
     cout << "> numWords(terminals): " << stats.numWords << "\n";
     cout << "> maxHeight (bits): " << stats.maxHeight << "\n";
-    cout << "> avgHeight (bits): " << avgHeight << "\n";
-    cout << "> avg word length (bytes): " << avgWordLen << "\n";
-    cout << "> avg height/wordLen (bytes): " << avgHeightRatioWordLen << "\n";
-    cout << "> avg Nodes/#words: " << avgNodeRatioWords << endl;
+    cout << "> avgHeight (bits): " << stats.avgHeight << "\n";
+    cout << "> avg word length (bytes): " << stats.avgWordLen << "\n";
+    cout << "> avg height/wordLen (bytes): " << stats.avgHeightRatioWordLen << "\n";
+    cout << "> avg Nodes/wordLen: " << stats.avgNodeRatioWordLen << "\n";
+    cout << "> avg Nodes/#words: " << stats.avgNodeRatioWords << endl;
     cout << "\n---------------------------------" << endl;
-    cout << "MemoryUsage (bytes): " << memory << endl;
+    cout << "MemoryUsage (bytes): " << stats.totalMemory << endl;
     cout << "----------dividit entre----------" << endl;
     cout << "> guardar les paraules: " << stats.wordsMemory << endl;
     cout << "> guardar posicions en text: " << stats.posMemory << endl;
