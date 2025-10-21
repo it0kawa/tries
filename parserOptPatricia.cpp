@@ -51,15 +51,14 @@ int main()
     //cout << (int)'a' << endl;
     trie.printStats();
     // Prova
-    string word = clean_word("a");
-    //string w = clean_word("eoeppdx");
-    // vector<size_t> alice_positions = trie.getPositions(w);
-    // cout << "trobat a: ";
-    // for (auto p : alice_positions) cout << p << ", ";
-    // cout << endl;
-    //cout << "autocompleta: (" << word << ")" << endl;
-    //set<string> s = trie.autocompleta(word);
-    //for (string w : s) cout << w << ", ";
-    //cout << endl;
+    string w = clean_word("the");
+    pair<bool, size_t> contained = trie.containsAndPathLen(w);
+    cout << "paraula '" << w << "' contained? (" << contained.first << endl;
+    cout << "path de llargada: " << contained.second << endl;
+    pair<vector<size_t>, size_t> positions = trie.getPositionsAndPathLen(w);
+    cout << "trobat " << positions.first.size() << " vegades a: " << endl;
+    for (auto p : positions.first) cout << p << ", ";
+    cout << endl;
+    cout << "path de llargada: " << positions.second << endl;
 }
 
