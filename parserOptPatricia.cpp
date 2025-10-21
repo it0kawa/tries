@@ -25,8 +25,9 @@ int main()
 {   
     //string filename = "test_files/moby_dick.txt";
     //string filename = "test_files/alice_wonderland.txt";
-    //string filename = "test_files/words_alpha.txt";
-    string filename = "test_files/leipzig1m.txt";
+    string filename = "test_files/words_alpha.txt";
+    //string filename = "test_files/leipzig1m.txt";
+    //string filename = "../old/test_files/enwiki-latest-all-titles-in-ns0";
     ifstream file(filename);
 
     if (!file.is_open()) {
@@ -39,22 +40,21 @@ int main()
     size_t word_position = 1;
     while (file >> raw_word) {
         string word = clean_word(raw_word);
-        //string word = raw_word;
         if (!word.empty()) {
-            //cout << word << endl;
             trie.insert(word, word_position);
-            //trie.printStats();
         }
         word_position++;
     }
-
+    cout << "done reading" << endl;
     //cout << (int)'a' << endl;
     trie.printStats();
     // Prova
-    string w = clean_word("the");
+    string w = clean_word("hello");
     pair<bool, size_t> contained = trie.containsAndPathLen(w);
     cout << "paraula '" << w << "' contained? (" << contained.first << endl;
     cout << "path de llargada: " << contained.second << endl;
+    cout << "contained? " << trie.contains(clean_word(w)) << endl;
+    // bad alloc depenent de la paraula per test wikipedia
     pair<vector<size_t>, size_t> positions = trie.getPositionsAndPathLen(w);
     cout << "trobat " << positions.first.size() << " vegades a: " << endl;
     for (auto p : positions.first) cout << p << ", ";
