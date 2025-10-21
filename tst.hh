@@ -24,6 +24,16 @@ Implementacio d'un TST
     **Veure costos a transparencies de la documentacio
 */
 
+struct Stats {
+    size_t maxHeight = 0;
+    size_t totalHeight = 0;
+    size_t numNodes = 0;
+    size_t numWords = 0;
+    size_t totalWordlen = 0;
+    size_t staticMemory = 0;
+    size_t posMemory = 0;
+};
+
 class Tst {
 private:
     class Node {
@@ -47,6 +57,8 @@ private:
         void putLeft(Node* node);
         void putMid(Node* node);
         void putRight(Node* node);
+        pair<size_t,size_t> getMemoryUsage() const;
+        bool isTerminal() const;
     };
 
     // Comença els atributs i metodes de la classe:
@@ -54,6 +66,7 @@ private:
     size_t clength;
     Node* put(Node* node, const string &key, const size_t &val, size_t d);
     Node* get(Node* node, const string &key, size_t d) const;
+    void calculateStats(const Node* node, Stats &stats, size_t height);
 
 public:
     Tst();
@@ -61,6 +74,9 @@ public:
     // funcions publiques per limitar comportament des de l'exterior. Cada funcio crida a una privada
     void put(const string &key, const size_t &val);
     vector<size_t> get(const string &key) const;
+    Stats calculateStats() const;
+    void printStats() const;
+
 };
 
 #endif
