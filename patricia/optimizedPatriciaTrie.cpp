@@ -423,6 +423,6 @@ void OPTrie::printStats() const {
     cout << "----------dividit entre----------" << endl;
     cout << "> guardar les paraules: " << stats.wordsMemory << endl;
     cout << "> guardar posicions en text: " << stats.posMemory << endl;
-    cout << "> altres: " << stats.staticMemory << endl;
+    cout << "> altres(static node memory): " << stats.staticMemory << endl;
     cout << "=================================\n" << endl;
 }
