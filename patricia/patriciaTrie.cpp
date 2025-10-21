@@ -357,7 +357,7 @@ void PTrie::printStats() const {
     cout << "> avgHeight (bits): " << avgHeight << "\n";
     cout << "> avg word length (bytes): " << avgWordLen << "\n";
     cout << "> avg height/wordLen (bytes): " << avgHeightRatioWordLen << "\n";
-    cout << "> avg Nodes/word: " << avgNodeRatioWords << endl;
+    cout << "> avg Nodes/#words: " << avgNodeRatioWords << endl;
     cout << "\n---------------------------------" << endl;
     cout << "MemoryUsage (bytes): " << memory << endl;
     cout << "----------dividit entre----------" << endl;
