@@ -1,6 +1,6 @@
 FLAGS = -Wall -Werror -O2 -std=c++17
 
-all: testNaive testTst testPatricia parserNaive parserPatricia parserOptPatricia
+all: testNaive testTst testPatricia parserNaive parserPatricia parserOptPatricia parserTst
 
 testNaive:
 	g++ $(FLAGS) -o testNaive.x testNaive.cpp naive.cpp
@@ -13,7 +13,10 @@ testPatricia:
 		./patricia/testPatricia.cpp
 
 parserNaive:
-	g++ $(FLAGS) -o parserNaive.x Naive.cpp parserNaive.cc
+	g++ $(FLAGS) -o parserNaive.x naive.cpp parserNaive.cc
+
+parserTst:
+	g++ $(FLAGS) -o parserTst.x tst.cpp parserTst.cpp
 	
 parserPatricia:
 	g++ $(FLAGS) -o parserPatricia.x ./patricia/patriciaTrie.cpp \
