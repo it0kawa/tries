@@ -1,58 +1,47 @@
-#include "patriciaTrie.hh"
+#include "optimizedPatriciaTrie.hh"
 #include <stdexcept>
 
+
 ///////////////////// Node
-PTrie::Node::Node(size_t bit, const string &key, int pos)
+OPTrie::Node::Node(size_t bit, size_t index)
     : bit(bit),
-    key(key)
+    index(index)
 {
     child[0] = this; child[1] = this;
-    if (pos >= 0) textPos = vector<size_t>{(size_t)pos};
 }
 
-bool PTrie::Node::isTerminal() const {
+bool OPTrie::Node::isTerminal() const {
     //return bit == TERMINALNODE;
     return (child[0] == this) && (child[1] == this);
 }
 
-size_t PTrie::Node::getBitPos() const { return bit; }
+size_t OPTrie::Node::getBitPos() const { return bit; }
 
-const string& PTrie::Node::getKey() const { return key; }
+size_t OPTrie::Node::getIndex() const { return index; }
 
-void PTrie::Node::setKey(const string key) { this->key = key; }
+void OPTrie::Node::setIndex(size_t index) { this->index = index; }
 
-PTrie::Node* PTrie::Node::getChild(bool branch) const { return child[branch]; }
+OPTrie::Node* OPTrie::Node::getChild(bool branch) const { return child[branch]; }
 
 // sobreescriu la branca si ja existeix
-void PTrie::Node::setChild(bool branch, PTrie::Node* node) {
+void OPTrie::Node::setChild(bool branch, OPTrie::Node* node) {
     child[branch] = node;
 }
 
-vector<size_t> PTrie::Node::getTextPos() {
-    return textPos;
-}
-
-void PTrie::Node::addTextPos(int pos) {
-    if (pos >= 0) textPos.push_back((size_t)pos);
-}
-
-tuple<size_t, size_t, size_t> PTrie::Node::getMemoryUsage() const {
-    // no inclou la memoria dinamica
+size_t OPTrie::Node::getMemoryUsage() const {
+    // els nodes optimitzats no tenen memoria dinamica
     size_t staticMem = sizeof(*this);
-
-    // afegim la memoria dinamica del string
-    size_t wordsMem = sizeof(char) * key.capacity();
-    // afegim la memoria dinamica del vector
-    size_t posMem = sizeof(size_t) * textPos.capacity();
-    return {staticMem, wordsMem, posMem};
+    return staticMem;
 }
 
 ///////////////////// Trie
-PTrie::PTrie() : root(new Node(0, "~")) {}
+OPTrie::OPTrie(int numwords) : root(new Node(0)) {
+    if (numwords > 0) infoNodes.reserve(numwords);
+}
 
 // si el trie te algun element, sempre sera root[0] accessible, si root[0]
 // apunta a ell mateix el trie es buit.
-bool PTrie::isEmpty() const {
+bool OPTrie::isEmpty() const {
    return root->getChild(0) == root;
 }
 
@@ -64,11 +53,11 @@ Una manera d'assegurar aquesta premisa necessaria es afegir un centinela al
 final de cada paraula. Un punt en contra d'aixo es que no podem guardar cap
 paraula la versio original de la qual contingui aquest centinela.
 */
-void PTrie::preventPrefix(string &key) {
+void OPTrie::preventPrefix(string &key) {
     key.push_back('\0');
 }
 
-bool PTrie::verify(const string &key) {
+bool OPTrie::verify(const string &key) {
     try {
         if (key == "") {
             throw invalid_argument("no s'accepta string buit (\"\")");
@@ -90,13 +79,39 @@ un prefix igual molt mes llarg que el sufix, per tant, el path compression
 es lleugerament mes eficient en memoria amb big endian que amb little endian
 ja que requereix menys nodes interemedis.
 */
-bool PTrie::getBit(const string &key, size_t i) {
+bool OPTrie::getBit(const string &key, size_t i) {
     // agafem el byte
     size_t index = i / 8;
     if (index >= key.length()) return false;
     // agafem el bit
     size_t bit = 7 - (i & 7);
     return ((unsigned char)key[index] >> bit) & 1;
+}
+
+void OPTrie::addTextPos(const Node* node, size_t pos) {
+    infoNodes[node->getIndex()]->textPos.push_back(pos);
+}
+
+void OPTrie::setKey(const Node *node, const string key) {
+    infoNodes[node->getIndex()]->key = key;
+}
+vector<size_t> OPTrie::getTextPos(const Node* node) const {
+    return infoNodes[node->getIndex()]->textPos;
+}
+
+const string& OPTrie::getKey(const Node* node) const {
+    return infoNodes[node->getIndex()]->key;
+}
+
+// precondicio: key ja verificada i conte continela
+// postcondicio: crea un nou node amb index `index`
+OPTrie::Node* OPTrie::makeTerminalNode(const string key, size_t pos) {
+    InfoNode* info = new InfoNode;
+    info->textPos.push_back(pos);
+    info->key = key;
+    infoNodes.push_back(info);
+    size_t index = infoNodes.size() - 1;
+    return new Node(TERMINALNODE, index);
 }
 
 /*
@@ -112,7 +127,7 @@ postcondicio:
       que originalment buscavem, aquest node pot guardar una paraula totalment
       different a `key`.
 */
-PTrie::Node *PTrie::findNode(const string &key) const
+OPTrie::Node *OPTrie::findNode(const string &key) const
 {
     /*
     // No funciona un early exit pero no se per que
@@ -142,21 +157,21 @@ PTrie::Node *PTrie::findNode(const string &key) const
     return child;
 }
 
-void PTrie::insert(string key, size_t pos) {
+void OPTrie::insert(string key, size_t pos) {
     if (!verify(key)) return;
     preventPrefix(key);
 
     if (isEmpty()) {
-        root->setChild(0, new Node(TERMINALNODE, key, pos));
+        root->setChild(0, makeTerminalNode(key, pos));
         return;
     }
 
     Node* child = findNode(key);
 
     // si la paraula ja pertany al trie retornem sense inserir pero afegim pos
-    const string &childKey = child->getKey();
+    const string &childKey = getKey(child);
     if (childKey == key) {
-        child->addTextPos(pos);
+        addTextPos(child, pos);
         return;
     }
     size_t diffBit = 0;
@@ -179,24 +194,24 @@ void PTrie::insert(string key, size_t pos) {
 
     Node* newNode = new Node(diffBit);
     bool branch = getBit(key, diffBit);
-    newNode->setChild(branch, new Node(TERMINALNODE, key, pos));
+    newNode->setChild(branch, makeTerminalNode(key, pos));
     newNode->setChild(!branch, child);
     // penjem aquest nou node diferencia al pare del node diferencia que hem
     // substituit
     parent->setChild(getBit(key, parent->getBitPos()), newNode);
 }
 
-bool PTrie::contains(string key) const {
+bool OPTrie::contains(string key) const {
     if (!verify(key) || isEmpty()) return false;
     preventPrefix(key);
 
     Node* node = findNode(key);
-    return node->getKey() == key;
+    return getKey(node) == key;
 }
 
 // veiem que es identica a findNode pero retorna el vector de posicions
 // en comptes d'un boolea
-vector<size_t> PTrie::getPositions(string key) const
+vector<size_t> OPTrie::getPositions(string key) const
 {
     vector<size_t> noMatch = vector<size_t>();
     if (!verify(key) || isEmpty()) return noMatch;
@@ -204,7 +219,7 @@ vector<size_t> PTrie::getPositions(string key) const
 
     Node* node = findNode(key);
 
-    if (node->getKey() == key) return node->getTextPos();
+    if (getKey(node) == key) return getTextPos(node);
     return noMatch;
 }
 
@@ -212,7 +227,7 @@ vector<size_t> PTrie::getPositions(string key) const
 Al contrari que amb findNode aqui no podem fer early return ja que hem
 d'arribar a un node terminal per comprobar si el seu prefix es el que busquem
 */
-bool PTrie::isPrefix(string prefix) const {
+bool OPTrie::isPrefix(string prefix) const {
     if (!verify(prefix) || isEmpty()) return false;
 
     string prefixNoCentinela = prefix;
@@ -226,7 +241,7 @@ bool PTrie::isPrefix(string prefix) const {
         child = child->getChild(getBit(prefix, child->getBitPos()));
     }
 
-    string childKey = child->getKey();
+    string childKey = getKey(child);
     // `prefix` no pot ser prefix d'una paraula mes petita que ell
     if (childKey.length() < prefix.length()) return false;
 
@@ -239,10 +254,10 @@ bool PTrie::isPrefix(string prefix) const {
     ja ve donada per autocompleta()
 */
 // s'ha de treure el centinela
-void PTrie::getPrefixed(const Node* node, set<string> &prefixed) {
+void OPTrie::getPrefixed(const Node* node, set<string> &prefixed) const {
     // anem recollint recursivament els terminals per cada branca
     if (node->isTerminal()) {
-        string key = node->getKey(); key.pop_back();
+        string key = getKey(node); key.pop_back();
         prefixed.insert(key);
     }
     for (size_t branch = 0; branch < 2; ++branch) {
@@ -254,7 +269,7 @@ void PTrie::getPrefixed(const Node* node, set<string> &prefixed) {
 }
 
 // s'ha de retornar el set de paraules pero sense el centinela
-set<string> PTrie::autocompleta(string prefix) const {
+set<string> OPTrie::autocompleta(string prefix) const {
     set<string> noMatch = set<string>();
     if (!verify(prefix)) return noMatch;
     if (isEmpty()) return noMatch;
@@ -285,7 +300,7 @@ set<string> PTrie::autocompleta(string prefix) const {
         child = child->getChild(getBit(prefix, child->getBitPos()));
     }
 
-    string childKey = child->getKey();
+    string childKey = getKey(child);
     // `prefix` no pot ser prefix d'una paraula mes petita que ell
     if (childKey.length() < prefix.length()) return noMatch;
 
@@ -302,39 +317,43 @@ set<string> PTrie::autocompleta(string prefix) const {
 
 //// expermients
 
-void PTrie::calculateStats(const Node* node, Stats &stats, size_t height) const {
+void OPTrie::calculateStatsNode(const Node *node, Stats &stats, size_t height) const {
     ++stats.numNodes;
     // static, words, pos
-    auto mem = node->getMemoryUsage();
-    stats.staticMemory += get<0>(mem);
-    stats.wordsMemory += get<1>(mem);
-    stats.posMemory += get<2>(mem);
+    stats.staticMemory = node->getMemoryUsage();
 
     if (node->isTerminal()) {
         stats.maxHeight = max(stats.maxHeight, height);
         stats.totalHeight += height;
         ++stats.numWords;
         // no es comtpa el centinela
-        stats.totalWordlen += node->getKey().length() - 1;
-        // cout << "word: " << node->getKey()
-        //     << "  height: " << height
-        //     << "  bitIndex: " << node->getBitPos()
-        //     << "  child0: " << node->getChild(0)
-        //     << "  child1: " << node->getChild(1)
-        //     << endl;
+        stats.totalWordlen += getKey(node).length() - 1;
         return;
     }
     else {
         Node* child0 = node->getChild(0);
         Node* child1 = node->getChild(1);
         height += 1;
-        calculateStats(child0, stats, height);
-        calculateStats(child1, stats, height);
+        calculateStatsNode(child0, stats, height);
+        calculateStatsNode(child1, stats, height);
     }
 }
 
-pair<PTrie::Node *, size_t> PTrie::findNodeAndPathLen(const string &key) const
-{
+void OPTrie::calculateStatsTrie(Stats &stats) const {
+    stats.staticMemory += sizeof(InfoNode*) * infoNodes.capacity();
+    for (const auto node : infoNodes) {
+        stats.staticMemory += sizeof(InfoNode);
+        stats.wordsMemory += node->key.capacity() * sizeof(char);
+        stats.posMemory += node->textPos.capacity() * sizeof(size_t);
+    }
+}
+
+void OPTrie::calculateStats(Stats &stats) const {
+    calculateStatsNode(root->getChild(0), stats, 1);
+    calculateStatsTrie(stats);
+}
+
+pair<OPTrie::Node *, size_t> OPTrie::findNodeAndPathLen(const string &key) const {
     Node* parent = root;
     // root[1] mai tindra elements
     Node* child = parent->getChild(0);
@@ -348,32 +367,30 @@ pair<PTrie::Node *, size_t> PTrie::findNodeAndPathLen(const string &key) const
     return {child, path};
 }
 
-pair<vector<size_t>, size_t> PTrie::getPositionsAndPathLen(string key) const
-{
+pair<vector<size_t>, size_t> OPTrie::getPositionsAndPathLen(string key) const {
     vector<size_t> noMatch = vector<size_t>();
     if (!verify(key) || isEmpty()) return {noMatch, 0};
     preventPrefix(key);
 
     pair<Node*, size_t> p = findNodeAndPathLen(key);
     
-    if (p.first->getKey() == key) return {p.first->getTextPos(), p.second};
+    if (getKey(p.first) == key) return {getTextPos(p.first), p.second};
     return {noMatch, 0};
 }
 
-pair<bool, size_t> PTrie::containsAndPathLen(string key) const
-{
+pair<bool, size_t> OPTrie::containsAndPathLen(string key) const {
     if (!verify(key) || isEmpty()) return {false, 0};
     preventPrefix(key);
 
     pair<Node*, size_t> p = findNodeAndPathLen(key);
-    return {p.first->getKey() == key, p.second};
+    return {getKey(p.first) == key, p.second};
 }
 
-Stats PTrie::getStats() const {
+Stats OPTrie::getStats() const {
     Stats stats;
 
     // root es un dummy
-    if (!isEmpty()) calculateStats(root->getChild(0), stats, 1);
+    if (!isEmpty()) calculateStats(stats);
 
     if (stats.numWords > 0) {
         stats.avgHeight = (float)stats.totalHeight / stats.numWords;
@@ -382,17 +399,18 @@ Stats PTrie::getStats() const {
     }
     if (stats.avgWordLen > 0) {
         stats.avgHeightRatioWordLen = stats.avgHeight / stats.avgWordLen;
+        stats.avgNodeRatioWordLen = stats.numNodes / stats.avgWordLen;
     }
     stats.totalMemory = stats.staticMemory + stats.wordsMemory + stats.posMemory;
     
     return stats;
 }
 
-void PTrie::printStats() const {
+void OPTrie::printStats() const {
     Stats stats = getStats();
 
     cout << "\n=================================" << endl;
-    cout << "       Patricia trie stats" << endl;
+    cout << "    OPT Patricia trie stats" << endl;
     cout << "---------------------------------" << endl;
     cout << "> numNodes: " << stats.numNodes << "\n";
     cout << "> numWords(terminals): " << stats.numWords << "\n";
