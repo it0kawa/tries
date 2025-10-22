@@ -3,7 +3,7 @@
 /////////////// node
 Naive::Node::Node() : is_terminal(false), textPos(), childs() {}
 
-Naive::Node::Node(const vector<size_t> &vals): textPos(vals), childs() {}
+Naive::Node::Node(const vector<size_t> &vals): is_terminal(false), textPos(vals), childs() {}
 
 vector<size_t> Naive::Node::getMemoryUsage() const {
     // no inclou la memoria dinamica
@@ -84,8 +84,8 @@ void Naive::calculateStats(Node *node, Stats &stats, size_t height) {
     // si el vector te algun valor llavors aquella paraula que representa el node esta al dataset
     // pero poden haber nodes que estan al dataset pero no son fulles
     if (node->getTextPos().size() > 0) {
-        stats.totalWordlen += height;
-        ++stats.numWords;
+        stats.totalWordlen += height * node->getTextPos().size();
+        stats.numWords += node->getTextPos().size();
     }
     for (size_t i = 0; i < R; ++i) {
         Node* child = node->getChild(i);

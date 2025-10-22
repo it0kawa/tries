@@ -1,9 +1,9 @@
 #include "tst.hh"
 
 //Node:
-Tst::Node::Node() : textPos(), c(), left(), mid(), right() {}
+Tst::Node::Node() : is_terminal(false), textPos(), c(), left(), mid(), right() {}
 
-Tst::Node::Node(const vector<size_t> &valuesP, const string &cP) : textPos(valuesP), c(cP), left(), mid(), right() {} 
+Tst::Node::Node(const vector<size_t> &valuesP, const string &cP) : is_terminal(false), textPos(valuesP), c(cP), left(), mid(), right() {} 
 
 vector<size_t> Tst::Node::getTextPos() const {return textPos;}
 
@@ -92,15 +92,13 @@ void Tst::calculateStats(Node *node, Stats &stats, size_t height) {
     // si el vector te algun valor llavors aquella paraula que representa el node esta al dataset
     // pero poden haber nodes que estan al dataset pero no son fulles
     if (node->getTextPos().size() > 0) {
-        stats.totalWordlen += height;
+        stats.totalWordlen += (height + 1) * node->getTextPos().size();
         ++stats.numWords;
     }
     
     vector<Node*> childs = {node->getMid(), node->getLeft(), node->getRight()};
-    
     for (auto i : childs) {
         if (i == nullptr) continue;
-
         vector<size_t> mem = i->getMemoryUsage();
         stats.staticMemory += mem[0];
         stats.posMemory += mem[1];
@@ -113,6 +111,11 @@ void Tst::calculateStats(Node *node, Stats &stats, size_t height) {
 
 Stats Tst::calculateStats() {
     Stats stats;
+    if (root == nullptr) {
+        stats.totalHeight = -1;
+        stats.avgHeight = -1;
+        return stats; // el cas del Tst buit
+    }
     calculateStats(root, stats, 0);
 
     if (stats.numWords > 0) {
