@@ -134,18 +134,18 @@ Stats Tst::calculateStats() {
 
 // Tst public:
 
-void Tst::insert(const string &key, const size_t &val) {
+void Tst::insert(string key, const size_t &val) {
     root = put(root, key, val, 0); // retorna l'arbre amb la key insertada
 }
 
-vector<size_t> Tst::getPositions(string &key) {
+vector<size_t> Tst::getPositions(string key) {
     // comprobem si esta la key al arbre (root), si no esta retornem valor default. Si esta, retornem el vector de values (vector amb les posicions on esta aquella paraula al text)
     Node* node = get(root, key, 0);
     if (node == nullptr) return vector<size_t>();
     return node->getTextPos();
 }
 
-bool Tst::contains(const string &key) {
+bool Tst::contains(string key) {
     return getPositions(key).size() > 0;
 }
 

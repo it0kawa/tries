@@ -84,9 +84,9 @@ public:
     Tst();
     Tst(const size_t &clengthP);
     // funcions publiques per limitar comportament des de l'exterior. Cada funcio crida a una privada
-    void insert(const string key, const size_t &val);
+    void insert(string key, const size_t &val);
     vector<size_t> getPositions(string key);
-    bool contains(const string key);
+    bool contains(string key);
     pair<vector<size_t>, size_t> getPositionsAndPathLen(string key);
     pair<bool, size_t> containsAndPathLen(string key);
     Stats getStats();
