@@ -94,8 +94,21 @@ void test3() {
     assert(trie.getPositions("noExisteix") == vector<size_t>());
     trie.printStats();
 
-    assert(trie.contains("holaa"));
-    assert(!trie.contains("noExisteix"));
+    assert(trie.contains("adeu"));
+    pair<vector<size_t>, size_t> p1 = trie.getPositionsAndPathLen("adeu");
+    assert(p1.first == resultsTest[1].second);
+    cout << "adeu: " << p1.second << endl;
+    assert(trie.containsAndPathLen("adeu").first);
+    assert(trie.containsAndPathLen("adeu").second == p1.second);
+
+
+    assert(!trie.contains("adue"));
+    pair<vector<size_t>, size_t> p2 = trie.getPositionsAndPathLen("adue");
+    assert(p2.first == vector<size_t>());
+    cout << "adue: " << p2.second << endl;
+    assert(!trie.containsAndPathLen("adue").first);
+    assert(trie.containsAndPathLen("adue").second == p2.second);
+
 
     cout << "> test 1 (get/put) correcte" << endl;
 }

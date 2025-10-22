@@ -80,6 +80,23 @@ typename Tst::Node* Tst::get(
     else return node;
 }
 
+typename Tst::Node* Tst::getPositionsAndPathLen(Node* node, const string &key, size_t d, size_t &pathLen) {
+    // Si el node inicial es buit, o be anem recorrent nodes i trobem que acaba sent buit, llavors no existeix la paraula sencera al arbre
+    if (node == nullptr) return nullptr;
+    ++pathLen;
+    // caracter c per la posicio d:
+    string c = key.substr(d, clength);
+    // per un caracter c donat i el caracter c' de node,
+    //      si c < c', llavors c nomes pot estar al arbre esquerre
+    //      si c > c', llavors c nomes pot estar al arbre dret
+    //      si c = c', llavors esta al node del mig, pero entrem a la branca del mig si encara no sabem que la resta de caracters de la paraula estan al arbre
+    //      si c = c', finalment sabem que l'ultim caracter, i que tots els anteriors tambe, llavors podem retornar el node (que aquell mateix contindra el vector amb les posicions on esta aquella paraula al text)
+    if (c.compare(node->getCharacter()) < 0) return getPositionsAndPathLen(node->getLeft(), key, d, pathLen);
+    else if (c.compare(node->getCharacter()) > 0) return getPositionsAndPathLen(node->getRight(), key, d, pathLen);
+    else if (d < key.length() - 1) return getPositionsAndPathLen(node -> getMid(), key, d + clength, pathLen);
+    else return node;
+}
+
 void Tst::calculateStats(Node *node, Stats &stats, size_t height, size_t wordCount) {
     ++stats.numNodes;
 
@@ -147,6 +164,18 @@ vector<size_t> Tst::getPositions(string key) {
 
 bool Tst::contains(string key) {
     return getPositions(key).size() > 0;
+}
+
+pair<vector<size_t>, size_t> Tst::getPositionsAndPathLen(string key) {
+    size_t pathLen = 0;
+    Node* node = getPositionsAndPathLen(root, key, 0, pathLen);
+    if (node == nullptr) return {vector<size_t>(), pathLen};
+    return {node->getTextPos(), pathLen};
+}
+
+pair<bool, size_t> Tst::containsAndPathLen(string key) {
+    pair<vector<size_t>, size_t> p = getPositionsAndPathLen(key);
+    return {p.first.size() > 0, p.second};
 }
 
 Stats Tst::getStats() {
