@@ -28,16 +28,26 @@ struct Stats {
     size_t maxHeight = 0;
     size_t totalHeight = 0;
     size_t numNodes = 0;
+    size_t numNodesTerminals = 0;
     size_t numWords = 0;
     size_t totalWordlen = 0;
     size_t staticMemory = 0;
     size_t posMemory = 0;
+    size_t valMemory = 0;
+    size_t nodesMemory = 0;
+    size_t totalMemory = 0;
+
+    float avgHeight = 0.0;
+    float avgWordLen = 0.0;
+    float avgHeightRatioWordLen = 0.0;
+    float avgNodeRatioWordLen = 0.0;
 };
 
 class Tst {
 private:
     class Node {
     private:
+        bool is_terminal;
         vector<size_t> textPos;
         string c; // mida de c per tot node de l'arbre es com a molt clength, l'ultim node d'una paraula pot tindre mida de c = 1 sii la paraula te mida senar
         Node* left;
@@ -57,7 +67,8 @@ private:
         void putLeft(Node* node);
         void putMid(Node* node);
         void putRight(Node* node);
-        pair<size_t,size_t> getMemoryUsage() const;
+        vector<size_t> getMemoryUsage() const;
+        void setTerminal(bool b);
         bool isTerminal() const;
     };
 
@@ -66,7 +77,8 @@ private:
     size_t clength;
     Node* put(Node* node, const string &key, const size_t &val, size_t d);
     Node* get(Node* node, const string &key, size_t d) const;
-    void calculateStats(const Node* node, Stats &stats, size_t height);
+    void calculateStats(Node* node, Stats &stats, size_t height);
+    Stats calculateStats();
 
 public:
     Tst();
@@ -74,8 +86,8 @@ public:
     // funcions publiques per limitar comportament des de l'exterior. Cada funcio crida a una privada
     void put(const string &key, const size_t &val);
     vector<size_t> get(const string &key) const;
-    Stats calculateStats() const;
-    void printStats() const;
+    Stats getStats();
+    void printStats();
 
 };
 

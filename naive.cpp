@@ -72,7 +72,7 @@ bool Naive::contains(const string &key) const {
     return true;
 }
 
-void Naive::calculateStats(const Node *node, Stats &stats, size_t height) {
+void Naive::calculateStats(Node *node, Stats &stats, size_t height) {
     ++stats.numNodes;
 
     // si un node es fulla segur que la paraula que representa la fulla esta al dataset

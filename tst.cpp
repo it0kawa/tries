@@ -25,13 +25,16 @@ void Tst::Node::putMid(Node* node) {this->mid = node;}
 
 void Tst::Node::putRight(Node* node) {this->right = node;}
 
-pair<size_t, size_t> Tst::Node::getMemoryUsage() const {
-    // no inclou la memoria dinamica
+vector<size_t> Tst::Node::getMemoryUsage() const {
     size_t staticMem = sizeof(*this);
-    // afegim la memoria dinamica del vector i del valor c del node
-    size_t posMem = sizeof(size_t) * textPos.size() + sizeof(char) * c.size();
-    return {staticMem, posMem};
+    size_t posMem = sizeof(size_t) * textPos.size();
+    size_t valMem = sizeof(char) * c.size();
+    return {staticMem, posMem, valMem};
 }
+
+void Tst::Node::setTerminal(bool b) { is_terminal = b; }
+
+bool Tst::Node::isTerminal() const { return is_terminal; }
 
 //Tst private:
 Tst::Tst() : root(), clength(1) {}
@@ -47,7 +50,7 @@ typename Tst::Node* Tst::put(
     string c = key.substr(d, clength);
     // en cas de fer put d'una key nova, acabarem afegint nodes per aquells caracters que no estiguin al tst
     // en cas de fer put d'una key que ja esta, acabarem insertant un value al vector del node del final de la paraula 
-    if (node == nullptr) { node = new Node(); node->putCharacter(c); }
+    if (node == nullptr) { node = new Node(); node->putCharacter(c); node->setTerminal(true);}
     // per un caracter c donat i el caracter c' de node,
     //      si c < c' acabem possant c al arbre esquerre
     //      si c > c', acabem possant c al arbre dret
@@ -55,7 +58,7 @@ typename Tst::Node* Tst::put(
     //      si c = c', finalment entra i posa un value
     if (c.compare(node->getCharacter()) < 0) node->putLeft(put(node->getLeft(), key, val, d)); 
     else if (c.compare(node->getCharacter()) > 0) node->putRight(put(node->getRight(), key, val, d)); 
-    else if (d < key.length() - 1) node->putMid(put(node->getMid(), key, val, d + clength));
+    else if (d < key.length() - 1) { node->setTerminal(false); node->putMid(put(node->getMid(), key, val, d + clength)); }
     else node->putTextPos(val);
     return node; // com es recursiu retornara al final l'arbre amb la key insertada
 }
@@ -77,25 +80,54 @@ typename Tst::Node* Tst::get(
     else return node;
 }
 
-void Tst::calculateStats(const Node *node, Stats &stats, size_t height) {
+void Tst::calculateStats(Node *node, Stats &stats, size_t height) {
     ++stats.numNodes;
 
+    // si un node es fulla segur que la paraula que representa la fulla esta al dataset
     if (node->isTerminal()) {
+        ++stats.numNodesTerminals;
         stats.maxHeight = max(stats.maxHeight, height);
         stats.totalHeight += height;
+    }
+    // si el vector te algun valor llavors aquella paraula que representa el node esta al dataset
+    // pero poden haber nodes que estan al dataset pero no son fulles
+    if (node->getTextPos().size() > 0) {
         stats.totalWordlen += height;
         ++stats.numWords;
     }
-    for (size_t i = 0; i < R; ++i) {
-        Node* child = node->getChild(i);
-        if (child == nullptr) continue;
-        
-        pair<size_t, size_t> mem = child->getMemoryUsage();
-        stats.staticMemory += mem.first;
-        stats.posMemory += mem.second;
-        
-        calculateStats(child, stats, height + 1);
+    
+    vector<Node*> childs = {node->getMid(), node->getLeft(), node->getRight()};
+    
+    for (auto i : childs) {
+        if (i == nullptr) continue;
+
+        vector<size_t> mem = i->getMemoryUsage();
+        stats.staticMemory += mem[0];
+        stats.posMemory += mem[1];
+        stats.valMemory += mem[2];
+
+        calculateStats(i, stats, height + 1);
     }
+    
+}
+
+Stats Tst::calculateStats() {
+    Stats stats;
+    calculateStats(root, stats, 0);
+
+    if (stats.numWords > 0) {
+        stats.avgHeight = (float)stats.totalHeight / stats.numNodesTerminals;
+        stats.avgWordLen = (float)stats.totalWordlen / stats.numWords;
+    }
+    if (stats.avgWordLen > 0) {
+        stats.avgHeightRatioWordLen = stats.avgHeight / stats.avgWordLen;
+        stats.avgNodeRatioWordLen = stats.numNodes / stats.avgWordLen;
+    }
+
+    stats.nodesMemory = stats.posMemory + stats.valMemory;
+    stats.totalMemory = stats.staticMemory + stats.nodesMemory;
+
+    return stats;
 }
 
 // Tst public:
@@ -111,44 +143,29 @@ vector<size_t> Tst::get(const string &key) const {
     return node->getTextPos();
 }
 
-Stats Tst::calculateStats() const {
-    Stats stats;
-    calculateStats(root, stats, 0);
-    return stats;
+Stats Tst::getStats() {
+    return calculateStats();
 }
 
-void Tst::printStats() const {
-    Stats stats;
+void Tst::printStats() {
+    Stats stats = calculateStats();
 
-    calculateStats(root, stats, 0);
-    
-    float avgHeight = 0, avgWordLen = 0;
-    float avgHeightRatioWordLen = 0, avgNodeRatioWordLen = 0;
-    if (stats.numWords > 0) {
-        avgHeight = (float)stats.totalHeight / stats.numNodesTerminals;
-        avgWordLen = (float)stats.totalWordlen / stats.numWords;
-    }
-    if (avgWordLen > 0) {
-        avgHeightRatioWordLen = avgHeight / avgWordLen;
-        avgNodeRatioWordLen = stats.numNodes / avgWordLen;
-    }
-
-    size_t memory = stats.staticMemory + stats.posMemory;
     cout << "\n=================================" << endl;
-    cout << "       Naive trie stats" << endl;
+    cout << "       Tst trie stats" << endl;
     cout << "---------------------------------" << endl;
     cout << "> numNodes: " << stats.numNodes << "\n";
     cout << "> numWords(terminals): " << stats.numNodesTerminals << "\n";
     cout << "> maxHeight: " << stats.maxHeight << "\n";
-    cout << "> avgHeight: " << avgHeight << "\n";
-    cout << "> avg word length: " << avgWordLen << "\n";
-    cout << "> avg height/wordLen: " << avgHeightRatioWordLen << "\n";
-    cout << "> avg Node/wordLen: " << avgNodeRatioWordLen << endl;
+    cout << "> avgHeight: " << stats.avgHeight << "\n";
+    cout << "> avg word length: " << stats.avgWordLen << "\n";
+    cout << "> avg height/wordLen: " << stats.avgHeightRatioWordLen << "\n";
+    cout << "> avg Node/wordLen: " << stats.avgNodeRatioWordLen << endl;
     cout << "\n---------------------------------" << endl;
-    cout << "MemoryUsage (bytes): " << memory << endl;
+    cout << "MemoryUsage (bytes): " << stats.totalMemory << endl;
     cout << "----------dividit entre----------" << endl;
-    cout << "> guardar les paraules: N/A" << endl;
-    cout << "> guardar posicions en text: " << stats.posMemory << endl;
+    cout << "> guardar les paraules en el trie: " << stats.valMemory << endl;
+    cout << "> guardar les posicions en el trie: " << stats.posMemory << endl;
+    cout << "> nodes del trie: " << stats.nodesMemory << endl;
     cout << "> altres: " << stats.staticMemory << endl;
     cout << "=================================\n" << endl;
 }
