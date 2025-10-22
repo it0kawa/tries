@@ -93,6 +93,10 @@ void test3() {
     }
     assert(trie.get("noExisteix") == vector<size_t>());
     trie.printStats();
+
+    assert(trie.contains("holaa"));
+    assert(!trie.contains("noExisteix"));
+
     cout << "> test 1 (get/put) correcte" << endl;
 }
 

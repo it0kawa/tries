@@ -1,0 +1,148 @@
+
+=================================
+       Naive trie stats
+---------------------------------
+> numNodes: 1
+> numWords(terminals): 0
+> maxHeight: 0
+> avgHeight: 0
+> avg word length: 0
+> avg height/wordLen: 0
+> avg Node/wordLen: 0
+
+---------------------------------
+MemoryUsage (bytes): 0
+----------dividit entre----------
+> guardar les paraules en el trie: 0
+> guardar les posicions en el trie: 0
+> nodes del trie: 0
+> altres: 0
+=================================
+
+
+=================================
+       Naive trie stats
+---------------------------------
+> numNodes: 5
+> numWords(terminals): 1
+> maxHeight: 4
+> avgHeight: 4
+> avg word length: 4
+> avg height/wordLen: 1
+> avg Node/wordLen: 1.25
+
+---------------------------------
+MemoryUsage (bytes): 8328
+----------dividit entre----------
+> guardar les paraules en el trie: 0
+> guardar les posicions en el trie: 8
+> nodes del trie: 8
+> altres: 8320
+=================================
+
+
+=================================
+       Naive trie stats
+---------------------------------
+> numNodes: 6
+> numWords(terminals): 1
+> maxHeight: 5
+> avgHeight: 5
+> avg word length: 4.5
+> avg height/wordLen: 1.11111
+> avg Node/wordLen: 1.33333
+
+---------------------------------
+MemoryUsage (bytes): 10416
+----------dividit entre----------
+> guardar les paraules en el trie: 0
+> guardar les posicions en el trie: 16
+> nodes del trie: 16
+> altres: 10400
+=================================
+
+
+=================================
+       Naive trie stats
+---------------------------------
+> numNodes: 10
+> numWords(terminals): 2
+> maxHeight: 5
+> avgHeight: 4.5
+> avg word length: 4.33333
+> avg height/wordLen: 1.03846
+> avg Node/wordLen: 2.30769
+
+---------------------------------
+MemoryUsage (bytes): 18744
+----------dividit entre----------
+> guardar les paraules en el trie: 0
+> guardar les posicions en el trie: 24
+> nodes del trie: 24
+> altres: 18720
+=================================
+
+
+=================================
+       Naive trie stats
+---------------------------------
+> numNodes: 12
+> numWords(terminals): 3
+> maxHeight: 5
+> avgHeight: 3.66667
+> avg word length: 3.75
+> avg height/wordLen: 0.977778
+> avg Node/wordLen: 3.2
+
+---------------------------------
+MemoryUsage (bytes): 22912
+----------dividit entre----------
+> guardar les paraules en el trie: 0
+> guardar les posicions en el trie: 32
+> nodes del trie: 32
+> altres: 22880
+=================================
+
+
+=================================
+       Naive trie stats
+---------------------------------
+> numNodes: 12
+> numWords(terminals): 3
+> maxHeight: 5
+> avgHeight: 3.66667
+> avg word length: 3.8
+> avg height/wordLen: 0.964912
+> avg Node/wordLen: 3.15789
+
+---------------------------------
+MemoryUsage (bytes): 22920
+----------dividit entre----------
+> guardar les paraules en el trie: 0
+> guardar les posicions en el trie: 40
+> nodes del trie: 40
+> altres: 22880
+=================================
+
+
+=================================
+       Naive trie stats
+---------------------------------
+> numNodes: 12
+> numWords(terminals): 3
+> maxHeight: 5
+> avgHeight: 3.66667
+> avg word length: 3.8
+> avg height/wordLen: 0.964912
+> avg Node/wordLen: 3.15789
+
+---------------------------------
+MemoryUsage (bytes): 22920
+----------dividit entre----------
+> guardar les paraules en el trie: 0
+> guardar les posicions en el trie: 40
+> nodes del trie: 40
+> altres: 22880
+=================================
+
+> test 1 (get/put) correcte

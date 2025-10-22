@@ -64,9 +64,11 @@ private:
 
 public:
     Naive();
-    void put(const string &key, const size_t &val);
-    vector<size_t> get(const string &key) const;
-    bool contains(const string &key) const;
+    void insert(const string key, const size_t &val);
+    vector<size_t> getPositions(string key);
+    bool contains(const string key);
+    pair<vector<size_t>, size_t> getPositionsAndPathLen(string key);
+    pair<bool, size_t> containsAndPathLen(string key);
     Stats getStats();
     void printStats();
 };

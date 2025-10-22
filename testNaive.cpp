@@ -21,12 +21,12 @@ void test1() {
     Naive trie;
 
     for (auto &t : tests) {
-        trie.put(t.first, t.second);
+        trie.insert(t.first, t.second);
     } 
     for (auto &t : resultsTest) {
-        assert(trie.get(t.first) == t.second);
+        assert(trie.getPositions(t.first) == t.second);
     }
-    assert(trie.get("noExisteix") == vector<size_t>());
+    assert(trie.getPositions("noExisteix") == vector<size_t>());
     trie.printStats();
     cout << "> test 1 (get/put) correcte" << endl;
 }
@@ -39,7 +39,7 @@ void test2() {
     };
     Naive trie;
     for (auto &t : tests) {
-        trie.put(t.first, t.second);
+        trie.insert(t.first, t.second);
     } 
     for (auto &t : tests) {
         assert(trie.contains(t.first));
@@ -68,14 +68,18 @@ void test3() {
 
     trie.printStats();
     for (auto &t : tests) {
-        trie.put(t.first, t.second);
+        trie.insert(t.first, t.second);
         trie.printStats();
     } 
     for (auto &t : resultsTest) {
-        assert(trie.get(t.first) == t.second);
+        assert(trie.getPositions(t.first) == t.second);
     }
-    assert(trie.get("noExisteix") == vector<size_t>());
+    assert(trie.getPositions("noExisteix") == vector<size_t>());
     trie.printStats();
+
+    assert(trie.contains("holaa"));
+    assert(!trie.contains("noExisteix"));
+
     cout << "> test 1 (get/put) correcte" << endl;
 }
 

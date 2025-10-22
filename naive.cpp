@@ -30,7 +30,8 @@ void Naive::Node::setTerminal(bool b) { is_terminal = b; }
 
 bool Naive::Node::isTerminal() const { return is_terminal; }
 
-
+// Naive private
+Naive::Naive() : root(new Node()) {}
 
 Naive::Node* Naive::put(
     Naive::Node* node, const string &key, const size_t &val,size_t d) {
@@ -42,12 +43,6 @@ Naive::Node* Naive::put(
     return put(node->getChild(c), key, val, d + 1);
 }    
 
-
-
-
-/////////////// trie
-Naive::Naive() : root(new Node()) {}
-
 Naive::Node* Naive::get(
     Naive::Node* node, const string &key, size_t d) const {
 
@@ -55,21 +50,6 @@ Naive::Node* Naive::get(
     if (d == key.length()) return node;
     unsigned char c = key[d];
     return get(node->getChild(c), key, d + 1);
-}
-
-void Naive::put(const string &key, const size_t &val) { 
-    put(root, key, val, 0);
-}
-
-vector<size_t> Naive::get(const string &key) const {
-    Naive::Node* node = get(root, key, 0);
-    return (node == nullptr) ? vector<size_t>() : node->getTextPos();
-}
-
-bool Naive::contains(const string &key) const {
-    Node* node = get(root, key, 0);
-    if (node == nullptr || !node->isTerminal()) return false;
-    return true;
 }
 
 void Naive::calculateStats(Node *node, Stats &stats, size_t height) {
@@ -120,6 +100,18 @@ Stats Naive::calculateStats() {
 }
 
 // Naive public:
+void Naive::insert(const string key, const size_t &val) { 
+    put(root, key, val, 0);
+}
+
+vector<size_t> Naive::getPositions(string key) {
+    Naive::Node* node = get(root, key, 0);
+    return (node == nullptr) ? vector<size_t>() : node->getTextPos();
+}
+
+bool Naive::contains(const string key)  {
+    return getPositions(key).size() > 0;
+}
 
 Stats Naive::getStats() {
     return calculateStats();

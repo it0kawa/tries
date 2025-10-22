@@ -80,7 +80,7 @@ typename Tst::Node* Tst::get(
     else return node;
 }
 
-void Tst::calculateStats(Node *node, Stats &stats, size_t height) {
+void Tst::calculateStats(Node *node, Stats &stats, size_t height, size_t wordCount) {
     ++stats.numNodes;
 
     // si un node es fulla segur que la paraula que representa la fulla esta al dataset
@@ -92,21 +92,18 @@ void Tst::calculateStats(Node *node, Stats &stats, size_t height) {
     // si el vector te algun valor llavors aquella paraula que representa el node esta al dataset
     // pero poden haber nodes que estan al dataset pero no son fulles
     if (node->getTextPos().size() > 0) {
-        stats.totalWordlen += (height + 1) * node->getTextPos().size();
-        ++stats.numWords;
+        stats.totalWordlen += (wordCount + 1) * node->getTextPos().size();
+        stats.numWords += node->getTextPos().size();
     }
     
-    vector<Node*> childs = {node->getMid(), node->getLeft(), node->getRight()};
-    for (auto i : childs) {
-        if (i == nullptr) continue;
-        vector<size_t> mem = i->getMemoryUsage();
-        stats.staticMemory += mem[0];
-        stats.posMemory += mem[1];
-        stats.valMemory += mem[2];
+    vector<size_t> mem = node->getMemoryUsage();
+    stats.staticMemory += mem[0];
+    stats.posMemory += mem[1];
+    stats.valMemory += mem[2];
 
-        calculateStats(i, stats, height + 1);
-    }
-    
+    if (node->getMid() != nullptr) calculateStats(node->getMid(), stats, height + 1, wordCount + 1);
+    if (node->getLeft() != nullptr) calculateStats(node->getLeft(), stats, height + 1, wordCount);
+    if (node->getRight() != nullptr) calculateStats(node->getRight(), stats, height + 1, wordCount);
 }
 
 Stats Tst::calculateStats() {
@@ -114,9 +111,11 @@ Stats Tst::calculateStats() {
     if (root == nullptr) {
         stats.totalHeight = -1;
         stats.avgHeight = -1;
+        stats.staticMemory = 4;
+        stats.totalMemory = stats.staticMemory + stats.nodesMemory;
         return stats; // el cas del Tst buit
     }
-    calculateStats(root, stats, 0);
+    calculateStats(root, stats, 0, 0);
 
     if (stats.numWords > 0) {
         stats.avgHeight = (float)stats.totalHeight / stats.numNodesTerminals;
@@ -135,15 +134,19 @@ Stats Tst::calculateStats() {
 
 // Tst public:
 
-void Tst::put(const string &key, const size_t &val) {
+void Tst::insert(const string &key, const size_t &val) {
     root = put(root, key, val, 0); // retorna l'arbre amb la key insertada
 }
 
-vector<size_t> Tst::get(const string &key) const {
+vector<size_t> Tst::getPositions(string &key) {
     // comprobem si esta la key al arbre (root), si no esta retornem valor default. Si esta, retornem el vector de values (vector amb les posicions on esta aquella paraula al text)
     Node* node = get(root, key, 0);
     if (node == nullptr) return vector<size_t>();
     return node->getTextPos();
+}
+
+bool Tst::contains(const string &key) {
+    return getPositions(key).size() > 0;
 }
 
 Stats Tst::getStats() {

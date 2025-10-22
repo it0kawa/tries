@@ -77,15 +77,18 @@ private:
     size_t clength;
     Node* put(Node* node, const string &key, const size_t &val, size_t d);
     Node* get(Node* node, const string &key, size_t d) const;
-    void calculateStats(Node* node, Stats &stats, size_t height);
+    void calculateStats(Node* node, Stats &stats, size_t height, size_t wordCount);
     Stats calculateStats();
 
 public:
     Tst();
     Tst(const size_t &clengthP);
     // funcions publiques per limitar comportament des de l'exterior. Cada funcio crida a una privada
-    void put(const string &key, const size_t &val);
-    vector<size_t> get(const string &key) const;
+    void insert(const string key, const size_t &val);
+    vector<size_t> getPositions(string key);
+    bool contains(const string key);
+    pair<vector<size_t>, size_t> getPositionsAndPathLen(string key);
+    pair<bool, size_t> containsAndPathLen(string key);
     Stats getStats();
     void printStats();
 
