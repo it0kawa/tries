@@ -1,6 +1,6 @@
 file            time        nNodes      depht       memUsage(bytes)
 
 alice           0.020015    9695        40          20399224
-words_alpha     1.16096     1027810     31          2140803560
-leipzig1m       1.17881     212431      33          458442280
 moby_dick       0.16203     60954       26          128505544
+leipzig1m       1.17881     212431      33          458442280
+words_alpha     1.16096     1027810     31          2140803560

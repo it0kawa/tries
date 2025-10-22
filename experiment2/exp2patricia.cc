@@ -6,7 +6,7 @@
 #include <cctype>
 #include <algorithm>
 #include <cassert>
-#include "./patricia/patriciaTrie.hh"
+#include "../patricia/patriciaTrie.hh"
 
 using namespace std;
 
@@ -23,10 +23,11 @@ string clean_word(const string& word) {
 
 int main()
 {   
-    //string filename = "test_files/moby_dick.txt";
-    //string filename = "test_files/alice_wonderland.txt";
-    //string filename = "test_files/words_alpha.txt";
-    string filename = "test_files/leipzig1m.txt";
+    string filename = "../test_files/alice_wonderland.txt";
+    //string filename = "../test_files/leipzig1m.txt";
+    //string filename = "../test_files/words_alpha.txt";
+    //string filename = "../test_files/moby_dick.txt";
+    //string filename = "../test_files/enwiki-latest-all-titles-in-ns0";
     ifstream file(filename);
 
     if (!file.is_open()) {

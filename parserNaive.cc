@@ -38,7 +38,7 @@ int main()
     while (file >> raw_word) {
         string word = clean_word(raw_word);
         if (!word.empty()) {
-            trie.insert(word, word_position);
+            trie.put(word, word_position);
         }
         word_position++;
     }
@@ -46,7 +46,7 @@ int main()
     trie.printStats();
     // Prova
     string word = clean_word("Alice's");
-    vector<size_t> alice_positions = trie.getPositions(word);
+    vector<size_t> alice_positions = trie.get(word);
     cout << "trobat a: ";
     for (auto p : alice_positions) cout << p << ", ";
     cout << endl;
