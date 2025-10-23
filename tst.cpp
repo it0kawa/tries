@@ -192,7 +192,7 @@ void Tst::printStats() {
     cout << "> numWords(terminals): " << stats.numNodesTerminals << "\n";
     cout << "> maxHeight: " << stats.maxHeight << "\n";
     cout << "> avgHeight: " << stats.avgHeight << "\n";
-    cout << "> avg word length (chars): " << stats.avgWordLen << "\n";
+    cout << "> avg word length (chars/bytes): " << stats.avgWordLen << "\n";
     cout << "> avg height/wordLen: " << stats.avgHeightRatioWordLen << "\n";
     cout << "> avg Node/wordLen: " << stats.avgNodeRatioWordLen << endl;
     cout << "\n---------------------------------" << endl;
