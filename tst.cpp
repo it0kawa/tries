@@ -109,7 +109,7 @@ void Tst::calculateStats(Node *node, Stats &stats, size_t height, size_t wordCou
     // si el vector te algun valor llavors aquella paraula que representa el node esta al dataset
     // pero poden haber nodes que estan al dataset pero no son fulles
     if (node->getTextPos().size() > 0) {
-        stats.totalWordlen += (wordCount + 1) * node->getTextPos().size();
+        stats.totalWordlen += (wordCount + 1);
         ++stats.numWords;
     }
     
