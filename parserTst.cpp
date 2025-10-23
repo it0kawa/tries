@@ -31,7 +31,7 @@ int main()
         return 1;
     }
 
-    Tst trie(3);
+    Tst trie;
     string raw_word;
     size_t word_position = 1;
 

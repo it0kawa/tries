@@ -65,7 +65,7 @@ void Naive::calculateStats(Node *node, Stats &stats, size_t height) {
     // pero poden haber nodes que estan al dataset pero no son fulles
     if (node->getTextPos().size() > 0) {
         stats.totalWordlen += height * node->getTextPos().size();
-        stats.numWords += node->getTextPos().size();
+        ++stats.numWords;
     }
     for (size_t i = 0; i < R; ++i) {
         Node* child = node->getChild(i);
@@ -127,7 +127,7 @@ void Naive::printStats() {
     cout << "> numWords(terminals): " << stats.numNodesTerminals << "\n";
     cout << "> maxHeight: " << stats.maxHeight << "\n";
     cout << "> avgHeight: " << stats.avgHeight << "\n";
-    cout << "> avg word length: " << stats.avgWordLen << "\n";
+    cout << "> avg word length (chars): " << stats.avgWordLen << "\n";
     cout << "> avg height/wordLen: " << stats.avgHeightRatioWordLen << "\n";
     cout << "> avg Node/wordLen: " << stats.avgNodeRatioWordLen << endl;
     cout << "\n---------------------------------" << endl;
@@ -136,6 +136,6 @@ void Naive::printStats() {
     cout << "> guardar les paraules en el trie: " << stats.valMemory << endl;
     cout << "> guardar les posicions en el trie: " << stats.posMemory << endl;
     cout << "> nodes del trie: " << stats.nodesMemory << endl;
-    cout << "> altres: " << stats.staticMemory << endl;
+    cout << "> static memory del trie: " << stats.staticMemory << endl;
     cout << "=================================\n" << endl;
 }
