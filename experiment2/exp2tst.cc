@@ -5,7 +5,8 @@
 #include <cctype>
 #include <algorithm>
 #include <cassert>
-#include "naive.hh"
+#include <chrono>
+#include "../tst.hh"
 
 using namespace std;
 
@@ -22,8 +23,11 @@ string clean_word(const string& word) {
 
 int main()
 {
-    string filename = "test_files/alice_wonderland.txt";
-    //string filename = "test_files/words_alpha.txt";
+    //string filename = "../test_files/alice_wonderland.txt";
+    //string filename = "../test_files/leipzig1m.txt";
+    //string filename = "../test_files/words_alpha.txt";
+    //string filename = "../test_files/moby_dick.txt";
+    string filename = "../test_files/enwiki-latest-all-titles-in-ns0";
     ifstream file(filename);
 
     if (!file.is_open()) {
@@ -31,22 +35,28 @@ int main()
         return 1;
     }
 
-    Naive trie;
+    Tst trie;
     string raw_word;
     size_t word_position = 1;
 
+    cout << "File tested --> " << filename << endl;
+
+    auto ini = std::chrono::high_resolution_clock::now();
     while (file >> raw_word) {
         string word = clean_word(raw_word);
         if (!word.empty()) {
-            trie.put(word, word_position);
+            trie.insert(word, word_position);
         }
         word_position++;
     }
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> time = end - ini;
+    cout << "Insertion time --> " << time.count() << endl;
 
     trie.printStats();
     // Prova
     string word = clean_word("Alice's");
-    vector<size_t> alice_positions = trie.get(word);
+    vector<size_t> alice_positions = trie.getPositions(word);
     cout << "trobat a: ";
     for (auto p : alice_positions) cout << p << ", ";
     cout << endl;

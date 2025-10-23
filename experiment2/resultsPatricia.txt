@@ -1,0 +1,7 @@
+file            time        nNodes      depht       memUsage(bytes)
+
+alice           
+moby_dick         
+leipzig1m       
+words_alpha     
+wiki            
