@@ -1,18 +1,18 @@
 alfabet utilitzat: ASCII
 
-1- mesurar metriques de consulta exitosa, insercio i espai ocupat: (pendent d'implementar tst)
+1- mesurar metriques de consulta exitosa, insercio i espai ocupat:
     a cada pas augmentar en m el nombre de paraules mentres es va mesurant el temps de consulta exitosa, 
     temps d'insercio, i espai ocupat. Per cada joc de proves proporcionats al document de 
     la practica. Fer una grafica per cada metrica segons nombre de paraules.
     I comparar amb costos teorics.
 
-2- mesurar construccio dels tries: (pendent d'implementar tst)
+2- mesurar construccio dels tries:
     per cada tries mesurar el temps de creacio, nombre de nodes creat, profunditat maxima (la mitjana es mes dificil),
     i espai en memoria, aixo per cada joc de proves proporcionat al document de la practica.
     Graficar adecuadament.
     Valorar i justificar segons costos teorics.
 
-3- mesurar metriques de cerques (si conte o no la paraula el trie): (pendent d'implementar totes)
+3- mesurar metriques de cerques (si conte o no la paraula el trie):
     per cada trie construit a partir de cada joc de proves de mida fixe, 
     mesurem el temps de cerca mitja i el nombre de nodes mitjans visitats per una mitjana de
     5 paraules que segur que estan al trie, i 5 paraules que segur que no estan.

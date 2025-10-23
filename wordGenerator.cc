@@ -8,7 +8,7 @@
 using namespace std;
 
 // Number of words to generate
-int NWORDS = 500000;
+int NWORDS = 530000; // aprox. 2^19
 
 // Lenght of words to generate
 int LEN = 9;
