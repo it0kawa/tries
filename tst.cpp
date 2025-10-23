@@ -189,7 +189,8 @@ void Tst::printStats() {
     cout << "       Tst trie stats" << endl;
     cout << "---------------------------------" << endl;
     cout << "> numNodes: " << stats.numNodes << "\n";
-    cout << "> numWords(terminals): " << stats.numNodesTerminals << "\n";
+    cout << "> numNodes (terminals/fulles): " << stats.numNodesTerminals << "\n";
+    cout << "> numWords: " << stats.numWords << "\n";
     cout << "> maxHeight: " << stats.maxHeight << "\n";
     cout << "> avgHeight: " << stats.avgHeight << "\n";
     cout << "> avg word length (chars/bytes): " << stats.avgWordLen << "\n";
