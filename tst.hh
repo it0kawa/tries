@@ -77,7 +77,7 @@ private:
     size_t clength;
     Node* put(Node* node, const string &key, const size_t &val, size_t d);
     Node* get(Node* node, const string &key, size_t d) const;
-    Node* getPositionsAndPathLen(Node* root, const string &key, size_t d, size_t &pathLen);
+    Node* getPositionsAndPathLen(Node* node, const string &key, size_t d, size_t &pathLen);
     void calculateStats(Node* node, Stats &stats, size_t height, size_t wordCount);
     Stats calculateStats();
 

@@ -7,7 +7,7 @@ alfabet utilitzat: ASCII
     I comparar amb costos teorics.
 
 2- mesurar construccio dels tries:
-    per cada tries mesurar el temps de creacio, nombre de nodes creat, profunditat maxima (la mitjana es mes dificil),
+    per cada tries mesurar el temps de creacio, nombre de nodes creat, profunditat mitjana,
     i espai en memoria, aixo per cada joc de proves proporcionat al document de la practica.
     Graficar adecuadament.
     Valorar i justificar segons costos teorics.

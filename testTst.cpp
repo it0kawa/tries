@@ -94,6 +94,30 @@ void test3() {
     assert(trie.getPositions("noExisteix") == vector<size_t>());
     trie.printStats();
 
+    cout << "> test 3 (print stats) correcte" << endl;
+}
+
+void test4() {
+    pair<string, int> tests[5] = {
+        {"hola", 1},
+        {"holaa", 5},
+        {"adeu", 2},
+        {"si", 3},
+        {"hola", 4},
+    };
+
+    pair<string, vector<size_t>> resultsTest[3] = {
+        {"hola", {1, 4}},
+        {"adeu", {2}},
+        {"si", {3}},
+    };
+
+    Tst trie;
+
+    for (auto &t : tests) {
+        trie.insert(t.first, t.second);
+    }
+
     assert(trie.contains("adeu"));
     pair<vector<size_t>, size_t> p1 = trie.getPositionsAndPathLen("adeu");
     assert(p1.first == resultsTest[1].second);
@@ -109,12 +133,12 @@ void test3() {
     assert(!trie.containsAndPathLen("adue").first);
     assert(trie.containsAndPathLen("adue").second == p2.second);
 
-
-    cout << "> test 1 (get/put) correcte" << endl;
+    cout << "> test 4 (get/containsPathLen) correcte" << endl;
 }
 
 int main() {
     test1();
     test2();
     test3();
+    test4();
 }

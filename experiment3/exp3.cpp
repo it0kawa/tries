@@ -55,7 +55,8 @@ int main() {
             optrie.insert(words[i],i+1);
         }
 
-        int words_in_tries = nwords; // 0..nwords
+
+        int fi_words_in_tries = nwords ; // 0..nwords
         int words_not_in_tries = NWORDSTESTS - nwords; // nwords..NWORDSTESTS
 
         //

@@ -52,6 +52,14 @@ Naive::Node* Naive::get(
     return get(node->getChild(c), key, d + 1);
 }
 
+Naive::Node* Naive::getPositionsAndPathLen(Node* node, const string &key, size_t d, size_t &pathLen) {
+    if (node == nullptr) return nullptr;
+    ++pathLen;
+    if (d == key.length()) return node;
+    unsigned char c = key[d];
+    return getPositionsAndPathLen(node->getChild(c), key, d + 1, pathLen);
+}
+
 void Naive::calculateStats(Node *node, Stats &stats, size_t height) {
     ++stats.numNodes;
 
@@ -105,12 +113,24 @@ void Naive::insert(const string key, const size_t &val) {
 }
 
 vector<size_t> Naive::getPositions(string key) {
-    Naive::Node* node = get(root, key, 0);
+    Node* node = get(root, key, 0);
     return (node == nullptr) ? vector<size_t>() : node->getTextPos();
 }
 
 bool Naive::contains(const string key)  {
     return getPositions(key).size() > 0;
+}
+
+pair<vector<size_t>, size_t> Naive::getPositionsAndPathLen(string key) {
+    size_t pathLen = 0;
+    Node* node = getPositionsAndPathLen(root, key, 0, pathLen);
+    if (node == nullptr) return {vector<size_t>(), pathLen};
+    else return {node->getTextPos(), pathLen};
+}
+
+pair<bool, size_t> Naive::containsAndPathLen(string key) {
+    pair<vector<size_t>, size_t> p = getPositionsAndPathLen(key);
+    return {p.first.size() > 0, p.second};
 }
 
 Stats Naive::getStats() {
