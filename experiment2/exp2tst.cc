@@ -23,11 +23,11 @@ string clean_word(const string& word) {
 
 int main()
 {
-    //string filename = "../test_files/alice_wonderland.txt";
-    //string filename = "../test_files/leipzig1m.txt";
-    //string filename = "../test_files/words_alpha.txt";
-    //string filename = "../test_files/moby_dick.txt";
-    string filename = "../test_files/enwiki-latest-all-titles-in-ns0";
+    //string filename = "../test_files/alice_wonderland_clean.txt";
+    //string filename = "../test_files/leipzig1m_clean.txt";
+    //string filename = "../test_files/words_alpha_clean.txt";
+    //string filename = "../test_files/moby_dick_clean.txt";
+    string filename = "../test_files/enwiki-latest-all-titles-in-ns0_clean";
     ifstream file(filename);
 
     if (!file.is_open()) {
@@ -36,17 +36,13 @@ int main()
     }
 
     Tst trie;
-    string raw_word;
-    size_t word_position = 1;
-
     cout << "File tested --> " << filename << endl;
 
+    string word;
+    size_t word_position = 1;
     auto ini = std::chrono::high_resolution_clock::now();
-    while (file >> raw_word) {
-        string word = clean_word(raw_word);
-        if (!word.empty()) {
-            trie.insert(word, word_position);
-        }
+    while (file >> word) {
+        trie.insert(word, word_position);
         word_position++;
     }
     auto end = std::chrono::high_resolution_clock::now();
@@ -54,17 +50,7 @@ int main()
     cout << "Insertion time --> " << time.count() << endl;
 
     trie.printStats();
-    // Prova
-    string word = clean_word("Alice's");
-    vector<size_t> alice_positions = trie.getPositions(word);
-    cout << "trobat a: ";
-    for (auto p : alice_positions) cout << p << ", ";
-    cout << endl;
-    //assert(!alice_positions.empty());
-    //assert(alice_positions[0] == 35);
-
-    cout << "Alice trobat a " << alice_positions.size() << endl;
-
+    cout << "end of program" << endl;
     
 }
 
