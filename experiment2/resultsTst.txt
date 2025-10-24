@@ -1,7 +1,122 @@
-file            time        nNodes      depht       memUsage(bytes)
+File tested --> ../test_files/alice_wonderland_clean.txt
+Insertion time --> 0.0221359
 
-alice           0.0192299   9694        47          1098470
-moby_dick       0.158135    60953       36          7148121  
-leipzig1m       1.90772     212430      42          35494150
-words_alpha     1.02919     1027809     114         94435841
-wiki            60.8332     109380232   236         9883290936
+=================================
+       Tst trie stats
+---------------------------------
+> numNodes: 9694
+> numNodes (terminals/fulles): 2402
+> numWords: 3192
+> maxHeight: 47
+> avgHeight: 13.9113
+> avg word length (chars/bytes): 6.57018
+> avg height/wordLen: 2.11734
+> avg Node/wordLen: 1475.46
+
+---------------------------------
+MemoryUsage (bytes): 1098470
+----------dividit entre----------
+> guardar les paraules en el trie: 9694
+> guardar les posicions en el trie: 235704
+> nodes del trie: 245398
+> static memory del trie: 853072
+=================================
+
+
+File tested --> ../test_files/leipzig1m_clean.txt
+Insertion time --> 1.58873
+
+=================================
+       Tst trie stats
+---------------------------------
+> numNodes: 212430
+> numNodes (terminals/fulles): 54116
+> numWords: 71483
+> maxHeight: 42
+> avgHeight: 18.5802
+> avg word length (chars/bytes): 7.94792
+> avg height/wordLen: 2.33774
+> avg Node/wordLen: 26727.8
+
+---------------------------------
+MemoryUsage (bytes): 35494150
+----------dividit entre----------
+> guardar les paraules en el trie: 212430
+> guardar les posicions en el trie: 16587880
+> nodes del trie: 16800310
+> static memory del trie: 18693840
+=================================
+
+File tested --> ../test_files/words_alpha_clean.txt
+Insertion time --> 0.951888
+
+=================================
+       Tst trie stats
+---------------------------------
+> numNodes: 1027809
+> numNodes (terminals/fulles): 282574
+> numWords: 370105
+> maxHeight: 114
+> avgHeight: 53.1629
+> avg word length (chars/bytes): 9.44246
+> avg height/wordLen: 5.6302
+> avg Node/wordLen: 108850
+
+---------------------------------
+MemoryUsage (bytes): 94435841
+----------dividit entre----------
+> guardar les paraules en el trie: 1027809
+> guardar les posicions en el trie: 2960840
+> nodes del trie: 3988649
+> static memory del trie: 90447192
+=================================
+
+
+File tested --> ../test_files/moby_dick_clean.txt
+Insertion time --> 0.213302
+
+=================================
+       Tst trie stats
+---------------------------------
+> numNodes: 60953
+> numNodes (terminals/fulles): 14815
+> numWords: 19959
+> maxHeight: 36
+> avgHeight: 17.0772
+> avg word length (chars/bytes): 7.81813
+> avg height/wordLen: 2.1843
+> avg Node/wordLen: 7796.37
+
+---------------------------------
+MemoryUsage (bytes): 7148121
+----------dividit entre----------
+> guardar les paraules en el trie: 60953
+> guardar les posicions en el trie: 1723304
+> nodes del trie: 1784257
+> static memory del trie: 5363864
+=================================
+
+
+File tested --> ../test_files/enwiki-latest-all-titles-in-ns0_clean
+Insertion time --> 59.1133
+
+=================================
+       Tst trie stats
+---------------------------------
+> numNodes: 109380232
+> numNodes (terminals/fulles): 12205639
+> numWords: 14543342
+> maxHeight: 236
+> avgHeight: 37.6095
+> avg word length (chars/bytes): 17.38
+> avg height/wordLen: 2.16396
+> avg Node/wordLen: 6.29346e+06
+
+---------------------------------
+MemoryUsage (bytes): 9883290936
+----------dividit entre----------
+> guardar les paraules en el trie: 109380232
+> guardar les posicions en el trie: 148450288
+> nodes del trie: 257830520
+> static memory del trie: 9625460416
+=================================
