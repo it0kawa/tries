@@ -1,0 +1,116 @@
+File tested --> ../test_files/alice_wonderland_clean.txt
+Insertion time --> 0.0210132
+
+=================================
+       Patricia trie stats
+---------------------------------
+> numNodes: 6383
+> numWords(terminals): 3192
+> maxHeight (bits): 25
+> avgHeight (bits): 15.682
+> avg word length (bytes): 6.57018
+> avg height/wordLen (bytes): 2.38685
+> avg Nodes/wordLen: 0
+> avg Nodes/#words: 1.99969
+
+---------------------------------
+MemoryUsage (bytes): 924133
+----------dividit entre----------
+> guardar les paraules: 95829
+> guardar posicions en text: 317664
+> static node memory: 510640
+=================================
+
+
+File tested --> ../test_files/leipzig1m_clean.txt
+Insertion time --> 1.40244
+
+=================================
+       Patricia trie stats
+---------------------------------
+> numNodes: 142965
+> numWords(terminals): 71483
+> maxHeight (bits): 43
+> avgHeight (bits): 24.7103
+> avg word length (bytes): 7.94792
+> avg height/wordLen (bytes): 3.10902
+> avg Nodes/wordLen: 0
+> avg Nodes/#words: 1.99999
+
+---------------------------------
+MemoryUsage (bytes): 37469427
+----------dividit entre----------
+> guardar les paraules: 2149147
+> guardar posicions en text: 23883080
+> static node memory: 11437200
+=================================
+
+File tested --> ../test_files/words_alpha_clean.txt
+Insertion time --> 0.557235
+
+=================================
+       Patricia trie stats
+---------------------------------
+> numNodes: 740209
+> numWords(terminals): 370105
+> maxHeight (bits): 54
+> avgHeight (bits): 29.9258
+> avg word length (bytes): 9.44246
+> avg height/wordLen (bytes): 3.16928
+> avg Nodes/wordLen: 0
+> avg Nodes/#words: 2
+
+---------------------------------
+MemoryUsage (bytes): 73323013
+----------dividit entre----------
+> guardar les paraules: 11145453
+> guardar posicions en text: 2960840
+> static node memory: 59216720
+=================================
+
+File tested --> ../test_files/moby_dick_clean.txt
+Insertion time --> 0.166562
+
+=================================
+       Patricia trie stats
+---------------------------------
+> numNodes: 39917
+> numWords(terminals): 19959
+> maxHeight (bits): 32
+> avgHeight (bits): 19.9975
+> avg word length (bytes): 7.81813
+> avg height/wordLen (bytes): 2.55784
+> avg Nodes/wordLen: 0
+> avg Nodes/#words: 1.99995
+
+---------------------------------
+MemoryUsage (bytes): 6175031
+----------dividit entre----------
+> guardar les paraules: 599247
+> guardar posicions en text: 2382424
+> static node memory: 3193360
+=================================
+
+
+File tested --> ../test_files/enwiki-latest-all-titles-in-ns0_clean
+Insertion time --> 37.9414
+
+=================================
+       Patricia trie stats
+---------------------------------
+> numNodes: 29086683
+> numWords(terminals): 14543342
+> maxHeight (bits): 113
+> avgHeight (bits): 42.8898
+> avg word length (bytes): 17.38
+> avg height/wordLen (bytes): 2.46777
+> avg Nodes/wordLen: 0
+> avg Nodes/#words: 2
+
+---------------------------------
+MemoryUsage (bytes): 2991823545
+----------dividit entre----------
+> guardar les paraules: 507543129
+> guardar posicions en text: 157345776
+> static node memory: 2326934640
+=================================
