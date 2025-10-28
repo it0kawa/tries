@@ -1,0 +1,391 @@
+exp n=3
+n ; 3=8w
+temps mitja en paraules del tries
+Naive; 1.4e-07
+Tst; 3.6e-07
+Patricia; 1e-07
+Patricia Optimitzat; 1.2e-07
+mitja nodes en paraules del tries
+Naive; 13
+Tst; 14
+Patricia; 5.2
+Patricia Optimitzat; 5.2
+temps mitja en paraules que no estan als tries
+Naive; 1e-07
+Tst; 1e-07
+Patricia; 1.2e-07
+Patricia Optimitzat; 1e-07
+mitja nodes en paraules que no estan als tries
+Naive; 1.4
+Tst; 3.2
+Patricia; 0
+Patricia Optimitzat; 0
+------------
+exp n=4
+n ; 4=16w
+temps mitja en paraules del tries
+Naive; 1.4e-07
+Tst; 3.6e-07
+Patricia; 1.6e-07
+Patricia Optimitzat; 1e-07
+mitja nodes en paraules del tries
+Naive; 13
+Tst; 15.2
+Patricia; 6.8
+Patricia Optimitzat; 6.8
+temps mitja en paraules que no estan als tries
+Naive; 1.4e-07
+Tst; 1.6e-07
+Patricia; 6e-08
+Patricia Optimitzat; 4e-08
+mitja nodes en paraules que no estan als tries
+Naive; 1.8
+Tst; 4.8
+Patricia; 0
+Patricia Optimitzat; 0
+------------
+exp n=5
+n ; 5=32w
+temps mitja en paraules del tries
+Naive; 1.6e-07
+Tst; 4.8e-07
+Patricia; 1.6e-07
+Patricia Optimitzat; 1.4e-07
+mitja nodes en paraules del tries
+Naive; 13
+Tst; 16.4
+Patricia; 8.8
+Patricia Optimitzat; 8.8
+temps mitja en paraules que no estan als tries
+Naive; 1e-07
+Tst; 1.8e-07
+Patricia; 1e-07
+Patricia Optimitzat; 1e-07
+mitja nodes en paraules que no estan als tries
+Naive; 2
+Tst; 5.4
+Patricia; 0
+Patricia Optimitzat; 0
+------------
+exp n=6
+n ; 6=64w
+temps mitja en paraules del tries
+Naive; 2.2e-07
+Tst; 4.8e-07
+Patricia; 1.8e-07
+Patricia Optimitzat; 1.6e-07
+mitja nodes en paraules del tries
+Naive; 13
+Tst; 18
+Patricia; 9.4
+Patricia Optimitzat; 9.4
+temps mitja en paraules que no estan als tries
+Naive; 8e-08
+Tst; 2.4e-07
+Patricia; 1e-07
+Patricia Optimitzat; 8e-08
+mitja nodes en paraules que no estan als tries
+Naive; 2.2
+Tst; 8.2
+Patricia; 0
+Patricia Optimitzat; 0
+------------
+exp n=7
+n ; 7=128w
+temps mitja en paraules del tries
+Naive; 2.6e-07
+Tst; 5.6e-07
+Patricia; 2.2e-07
+Patricia Optimitzat; 1.4e-07
+mitja nodes en paraules del tries
+Naive; 13
+Tst; 19.6
+Patricia; 11.4
+Patricia Optimitzat; 11.4
+temps mitja en paraules que no estan als tries
+Naive; 1.4e-07
+Tst; 2.6e-07
+Patricia; 1.4e-07
+Patricia Optimitzat; 1.4e-07
+mitja nodes en paraules que no estan als tries
+Naive; 2.6
+Tst; 9.8
+Patricia; 0
+Patricia Optimitzat; 0
+------------
+exp n=8
+n ; 8=256w
+temps mitja en paraules del tries
+Naive; 3.2e-07
+Tst; 7.6e-07
+Patricia; 2.4e-07
+Patricia Optimitzat; 1.6e-07
+mitja nodes en paraules del tries
+Naive; 13
+Tst; 22.2
+Patricia; 11.4
+Patricia Optimitzat; 11.4
+temps mitja en paraules que no estan als tries
+Naive; 1.8e-07
+Tst; 2.6e-07
+Patricia; 2.4e-07
+Patricia Optimitzat; 2e-07
+mitja nodes en paraules que no estan als tries
+Naive; 2.2
+Tst; 9
+Patricia; 0
+Patricia Optimitzat; 0
+------------
+exp n=9
+n ; 9=512w
+temps mitja en paraules del tries
+Naive; 5.8e-07
+Tst; 6.4e-07
+Patricia; 2.4e-07
+Patricia Optimitzat; 2.4e-07
+mitja nodes en paraules del tries
+Naive; 13
+Tst; 20.4
+Patricia; 12.6
+Patricia Optimitzat; 12.6
+temps mitja en paraules que no estan als tries
+Naive; 1.6e-07
+Tst; 3.6e-07
+Patricia; 2.6e-07
+Patricia Optimitzat; 1.2e-07
+mitja nodes en paraules que no estan als tries
+Naive; 2.8
+Tst; 11.2
+Patricia; 0
+Patricia Optimitzat; 0
+------------
+exp n=10
+n ; 10=1024w
+temps mitja en paraules del tries
+Naive; 2.8e-07
+Tst; 7.6e-07
+Patricia; 3.2e-07
+Patricia Optimitzat; 1.8e-07
+mitja nodes en paraules del tries
+Naive; 13
+Tst; 22
+Patricia; 12.4
+Patricia Optimitzat; 12.4
+temps mitja en paraules que no estan als tries
+Naive; 2e-07
+Tst; 5.2e-07
+Patricia; 4.8e-07
+Patricia Optimitzat; 2.6e-07
+mitja nodes en paraules que no estan als tries
+Naive; 3.2
+Tst; 11.2
+Patricia; 0
+Patricia Optimitzat; 0
+------------
+exp n=11
+n ; 11=2048w
+temps mitja en paraules del tries
+Naive; 8.8e-07
+Tst; 1.06e-06
+Patricia; 5.8e-07
+Patricia Optimitzat; 3.2e-07
+mitja nodes en paraules del tries
+Naive; 13
+Tst; 23.2
+Patricia; 15.4
+Patricia Optimitzat; 15.4
+temps mitja en paraules que no estan als tries
+Naive; 2.8e-07
+Tst; 5.4e-07
+Patricia; 3.4e-07
+Patricia Optimitzat; 2e-07
+mitja nodes en paraules que no estan als tries
+Naive; 3.2
+Tst; 12.4
+Patricia; 0
+Patricia Optimitzat; 0
+------------
+exp n=12
+n ; 12=4096w
+temps mitja en paraules del tries
+Naive; 6.6e-07
+Tst; 8.4e-07
+Patricia; 6e-07
+Patricia Optimitzat; 5e-07
+mitja nodes en paraules del tries
+Naive; 13
+Tst; 23
+Patricia; 16.6
+Patricia Optimitzat; 16.6
+temps mitja en paraules que no estan als tries
+Naive; 3.6e-07
+Tst; 8e-07
+Patricia; 5.8e-07
+Patricia Optimitzat; 3e-07
+mitja nodes en paraules que no estan als tries
+Naive; 3.4
+Tst; 16.2
+Patricia; 0
+Patricia Optimitzat; 0
+------------
+exp n=13
+n ; 13=8192w
+temps mitja en paraules del tries
+Naive; 1.04e-06
+Tst; 1.26e-06
+Patricia; 7e-07
+Patricia Optimitzat; 5.6e-07
+mitja nodes en paraules del tries
+Naive; 13
+Tst; 23.4
+Patricia; 16.8
+Patricia Optimitzat; 16.8
+temps mitja en paraules que no estan als tries
+Naive; 3e-07
+Tst; 7e-07
+Patricia; 9e-07
+Patricia Optimitzat; 3.8e-07
+mitja nodes en paraules que no estan als tries
+Naive; 4
+Tst; 15.8
+Patricia; 0
+Patricia Optimitzat; 0
+------------
+exp n=14
+n ; 14=16384w
+temps mitja en paraules del tries
+Naive; 1.02e-06
+Tst; 1.44e-06
+Patricia; 8.6e-07
+Patricia Optimitzat; 5.4e-07
+mitja nodes en paraules del tries
+Naive; 13
+Tst; 26
+Patricia; 18.6
+Patricia Optimitzat; 18.6
+temps mitja en paraules que no estan als tries
+Naive; 5e-07
+Tst; 7.8e-07
+Patricia; 8.2e-07
+Patricia Optimitzat; 3.8e-07
+mitja nodes en paraules que no estan als tries
+Naive; 5.6
+Tst; 17.6
+Patricia; 3.6
+Patricia Optimitzat; 3.6
+------------
+exp n=15
+n ; 15=32768w
+temps mitja en paraules del tries
+Naive; 9.8e-07
+Tst; 1.26e-06
+Patricia; 7.8e-07
+Patricia Optimitzat; 3.8e-07
+mitja nodes en paraules del tries
+Naive; 13
+Tst; 27.2
+Patricia; 18
+Patricia Optimitzat; 18
+temps mitja en paraules que no estan als tries
+Naive; 3.4e-07
+Tst; 1.14e-06
+Patricia; 8.4e-07
+Patricia Optimitzat; 3.6e-07
+mitja nodes en paraules que no estan als tries
+Naive; 4
+Tst; 17.4
+Patricia; 0
+Patricia Optimitzat; 0
+------------
+exp n=16
+n ; 16=65536w
+temps mitja en paraules del tries
+Naive; 1.12e-06
+Tst; 1.6e-06
+Patricia; 1e-06
+Patricia Optimitzat; 5e-07
+mitja nodes en paraules del tries
+Naive; 13
+Tst; 26.6
+Patricia; 19.6
+Patricia Optimitzat; 19.6
+temps mitja en paraules que no estan als tries
+Naive; 3.6e-07
+Tst; 1.18e-06
+Patricia; 1.04e-06
+Patricia Optimitzat; 5.4e-07
+mitja nodes en paraules que no estan als tries
+Naive; 4.4
+Tst; 18.2
+Patricia; 0
+Patricia Optimitzat; 0
+------------
+exp n=17
+n ; 17=131072w
+temps mitja en paraules del tries
+Naive; 9.8e-07
+Tst; 1.6e-06
+Patricia; 1.2e-06
+Patricia Optimitzat; 5.4e-07
+mitja nodes en paraules del tries
+Naive; 13
+Tst; 27.8
+Patricia; 20.4
+Patricia Optimitzat; 20.4
+temps mitja en paraules que no estan als tries
+Naive; 5.2e-07
+Tst; 1.18e-06
+Patricia; 1.04e-06
+Patricia Optimitzat; 4.6e-07
+mitja nodes en paraules que no estan als tries
+Naive; 6
+Tst; 19.6
+Patricia; 4.2
+Patricia Optimitzat; 4.2
+------------
+exp n=18
+n ; 18=262144w
+temps mitja en paraules del tries
+Naive; 1.14e-06
+Tst; 1.72e-06
+Patricia; 1.42e-06
+Patricia Optimitzat; 6.4e-07
+mitja nodes en paraules del tries
+Naive; 13
+Tst; 27.6
+Patricia; 22
+Patricia Optimitzat; 22
+temps mitja en paraules que no estan als tries
+Naive; 8.6e-07
+Tst; 1.22e-06
+Patricia; 1.36e-06
+Patricia Optimitzat; 6.2e-07
+mitja nodes en paraules que no estan als tries
+Naive; 9.6
+Tst; 23.2
+Patricia; 12.8
+Patricia Optimitzat; 12.8
+------------
+exp n=19
+n ; 19=524288w
+temps mitja en paraules del tries
+Naive; 1.12e-06
+Tst; 1.68e-06
+Patricia; 1.12e-06
+Patricia Optimitzat; 5.6e-07
+mitja nodes en paraules del tries
+Naive; 13
+Tst; 28
+Patricia; 22.2
+Patricia Optimitzat; 22.2
+temps mitja en paraules que no estan als tries
+Naive; 8.6e-07
+Tst; 1.36e-06
+Patricia; 1.38e-06
+Patricia Optimitzat; 6e-07
+mitja nodes en paraules que no estan als tries
+Naive; 9.6
+Tst; 24.2
+Patricia; 13.6
+Patricia Optimitzat; 13.6
+------------

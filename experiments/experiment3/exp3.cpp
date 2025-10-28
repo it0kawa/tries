@@ -49,7 +49,7 @@ int main() {
     OPTrie optrie;
 
     // mida_petita
-    string filename = "./inputs/mida_gran.txt";
+    string filename = "./inputs/test_fixe.txt";
     ifstream file(filename);
     if (!file.is_open()) {
         cerr << "Error: Could not open file " << filename << endl;
